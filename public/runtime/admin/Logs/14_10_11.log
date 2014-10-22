@@ -1,0 +1,2 @@
+[ 2014-10-11T16:47:19+08:00 ] ERR: (ThinkException) 非法操作compensate
+[ 2014-10-11T16:49:03+08:00 ] ERR: (ThinkException) 模板不存在[./admin/Tpl/business2/Integritygold/compensate.html]

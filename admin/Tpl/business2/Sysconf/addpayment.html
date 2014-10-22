@@ -1,0 +1,79 @@
+<!-- 整个公共页头 -->
+<include file="Public:head" />
+<!-- 整个公共页头结束 -->
+				
+<!-- 主导航 -->
+<div class="navbar-header pull-left" >
+<include file="Public:nav" />
+</div>
+				
+<!-- 主导航右边 -->
+<div class="navbar-header pull-right" role="navigation">
+	<include file="Public:acenav" />
+</div><!-- /.navbar-header -->
+
+<!-- 左边列表 -->
+<include file="Public:leftnav" />
+
+<div style="position:absolute;top:88px;left:188px;width:100%;">
+	<div class="place" style="height:36px;">
+	    <span>位置：</span>
+	    <ul class="placeul">
+	    <li><a href="javascript:;">增加&编辑支付信息</a></li>
+	    </ul>
+	    </div>
+	    
+	    <div class="mainindex">
+	    	<div class="formbody">
+    			<form class="form-horizontal" role="form" method="post">
+
+			    <div class="formtitle"><span>支付信息</span></div>
+			    
+			    <ul class="forminfo">
+			    <li><label>支付名称</label><input name="name" value="<?php echo $info['name']; ?>" type="text" class="dfinput" /><i></i></li>
+
+			    <li><label>描述</label><textarea name="description" cols="" rows="" class="textinput"><?php echo $info['description']; ?></textarea></li>
+
+			    <li><label>在线支付?</label>
+				<select class="form-control dfinput" name="online_pay">
+					<option value="0" <?php if ($vo['online_pay'] == 0): ?>
+						selected="selected"
+					<?php endif; ?>>否</option>
+					<option value="1" <?php if ($vo['online_pay'] == 1): ?>
+						selected="selected"
+					<?php endif; ?>>是</option>
+				</select>
+			    	<i></i></li>
+
+		    	<li><label>有效?</label>
+				<select class="form-control dfinput" name="is_effect">
+					<option value="0" <?php if ($vo['is_effect'] == 0): ?>
+						selected="selected"
+					<?php endif; ?>>否</option>
+					<option value="1" <?php if ($vo['is_effect'] == 1): ?>
+						selected="selected"
+					<?php endif; ?>>是</option>
+				</select>
+			    	<i></i></li>
+
+
+
+			    <li><label>ID</label><input name="idf_id" value="" type="text" class="dfinput" /><i></i></li>
+
+			    <li><label>账号</label><input name="account_id" value="" type="text" class="dfinput" /><i></i></li>
+
+			    <li><label>KEY</label><input name="key" value="" type="text" class="dfinput" /><i></i></li>
+
+			    <li><label>&nbsp;</label><input name="" type="submit" class="btn" value="确认保存"/>
+			    <input type="reset" class="btn btn-danger" value="重 置"></li>
+			    
+			    </ul>
+			    </form>
+			    
+			    </div>
+	    </div>
+</div>
+
+</body>
+
+</html>

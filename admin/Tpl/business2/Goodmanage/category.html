@@ -1,0 +1,58 @@
+<!-- 整个公共页头 -->
+<include file="Public:head" />
+<!-- 整个公共页头结束 -->
+				
+<!-- 主导航 -->
+<div class="navbar-header pull-left" >
+<include file="Public:nav" />
+</div>
+				
+<!-- 主导航右边 -->
+<div class="navbar-header pull-right" role="navigation">
+	<include file="Public:acenav" />
+</div><!-- /.navbar-header -->
+
+<!-- 左边列表 -->
+<include file="Public:leftnav" />
+
+<div style="position:absolute;top:88px;left:188px;width:100%;">
+	<div class="place" style="height:36px;">
+	    <span>位置：</span>
+	    <ul class="placeul">
+	    <li><a href="#">商品类目</a></li>
+	    </ul>
+	    </div>
+	    
+	    <div class="mainindex"  style="width:80%;position:relative;left:-100px;">
+	    	<link rel="stylesheet" type="text/css" href="__TMPL__Common/css/nec.css">
+	    	<a href="/index.php?m=Goodmanage&a=addcategory" class="u-btn u-btn-c3">增加类目</a>
+	    	<br><br>
+	    	<table class="m-table">
+	    	    <thead>
+	    	        <tr>
+	    	        	<th>ID</th>
+	    	        	<th>类目名称</th>
+	    	        	<th>排序值</th>
+	    	        	<th>操作</th>
+	    	        </tr>
+	    	    </thead>
+	    	    <tbody>
+	    	        <volist name="list" id="vo">
+	    	        	<tr>
+	    	        		<td>{$vo.id}</td>
+	    	        		<td>{$vo.name}</td>
+	    	        		<td>{$vo.sort}</td>
+	    	        		<td>
+	    	        			<a href="/index.php?m=Goodmanage&a=dcategory&id={$vo.id}" class="u-btn u-btn-c1">删除</a>
+	    	        			<!-- <a href="">编辑</a> -->
+	    	        		</td>
+	    	        	</tr>
+	    	        </volist>
+	    	    </tbody>
+	    	</table>
+	    </div>
+</div>
+
+</body>
+
+</html>

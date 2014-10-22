@@ -1,0 +1,29 @@
+<ul class="nav nav-list">
+	<li >
+		<a href="/">
+			<i class="icon-dashboard"></i>
+			<span class="menu-text"> 控制台 </span>
+		</a>
+	</li>
+	<?php foreach ($estatemenu1 as $key => $vo): ?>
+		<?php if (strstr($vo['url'], MODULE_NAME)): ?>
+			<?php foreach ($vo['below_menu'] as $key => $value): ?>
+				<?php if ($_SERVER['REQUEST_URI'] == $value['url']): ?>
+					<li class="active">
+						<a href="<?php echo $value['url']; ?>">
+							<i class="icon-dashboard"></i>
+							<span class="menu-text"> <?php echo $value['title']; ?> </span>
+						</a>
+					</li>
+				<?php else: ?>
+					<li>
+						<a href="<?php echo $value['url']; ?>">
+							<i class="icon-dashboard"></i>
+							<span class="menu-text"> <?php echo $value['title']; ?> </span>
+						</a>
+					</li>
+				<?php endif; ?>
+			<?php endforeach; ?>
+		<?php endif; ?>
+	<?php endforeach; ?>
+</ul><!-- /.nav-list -->

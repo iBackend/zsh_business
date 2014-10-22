@@ -1,0 +1,7 @@
+<IfModule mod_rewrite.c>
+  Options +FollowSymlinks
+  RewriteEngine On
+
+  RewriteCond %{REQUEST_FILENAME} \.(gif|jpg|jpeg|png|JPG|GIF|JPEG|PNG)$
+  RewriteRule ^public(.*)$ index.php?m=Base&a=img&pic=public$1&t=1 [QSA,PT,L]
+</IfModule>
