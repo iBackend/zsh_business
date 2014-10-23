@@ -90,6 +90,7 @@ class GoodmanageAction extends CommonAction
 			foreach ($arr_img['data'] as $key => $value) {
 				$_POST[$value['key']] = 'http://'.$_SERVER['HTTP_HOST'].$value['recpath'].$value['savename'];
 			}
+			$_POST['icon'] = 'http://'.$_SERVER['HTTP_HOST'].$arr_img['data'][0]['recpath'].$arr_img['data'][0]['savename'];
 			// 商家商品关联
 			$supplier_id = D('supplier_account_location_link')->where("`account_id` = {$bid}")->getField('location_id');
 			$deal_model = D('Deal');

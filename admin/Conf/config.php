@@ -4,7 +4,7 @@ if(file_exists(APP_ROOT_PATH.'system/config.php'))
 $sys_config	=	require APP_ROOT_PATH.'system/config.php';
 $array = array(
 	'TOKEN_ON'	=>	0,
-    'DEFAULT_THEME'    => 'business2', //后台模板
+    'DEFAULT_THEME'    => 'business', //后台模板
 	'DEFAULT_LANG'	   =>	'zh-cn', //后台语言
 	'URL_MODEL'		   =>	'0',     //后台URL模式为原始模式
 

@@ -1,11 +1,10 @@
 <!-- 导航 -->
-<ul class="nav ace-nav">
+<ul class="nav">
 	<volist name="estatemenu1" id="vo">
-		<li class="grey">
-			<a href="{$vo.url}">{$vo.title}
-				<span class="selected"></span>
-			</a>
+		<li>
+		<a href="{$vo.url}" class="">
+			<img src="__TMPL__Common/images/icon0<?php echo ($key+1);?>.png"  /><h2>{$vo.title}</h2>
+		</a>
 		</li>
 	</volist>
-	
 </ul>

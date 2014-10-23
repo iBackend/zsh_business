@@ -1,58 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<title>{:C('SYSTEM_TITLE');}</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<!-- basic styles -->
-		<link href="__TMPL__Common/assets/css/bootstrap.min.css" rel="stylesheet" />
-		<link rel="stylesheet" href="__TMPL__Common/assets/css/font-awesome.min.css" />
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>{:C('SYSTEM_TITLE');}</title>
+<link href="__TMPL__Common/css/style.css" rel="stylesheet" type="text/css" />
+<script language="JavaScript" src="__TMPL__Common/js/jquery.js"></script>
+<script type="text/javascript">
+$(function(){	
+	//顶部导航切换
+	$(".nav li a").click(function(){
+		$(".nav li a.selected").removeClass("selected")
+		$(this).addClass("selected");
+	})	
+})	
+</script>
 
-		<!--[if IE 7]>
-		  <link rel="stylesheet" href="__TMPL__Common/assets/css/font-awesome-ie7.min.css" />
-		<![endif]-->
 
-		<!-- page specific plugin styles -->
+</head>
 
-		<!-- fonts -->
+<body style="background:url(__TMPL__Common/images/topbg.gif) repeat-x;overflow-x:hidden">
 
-
-		<!-- ace styles -->
-
-		<link rel="stylesheet" href="__TMPL__Common/assets/css/ace.min.css" />
-		<link rel="stylesheet" href="__TMPL__Common/assets/css/ace-rtl.min.css" />
-		<link rel="stylesheet" href="__TMPL__Common/assets/css/ace-skins.min.css" />
-
-		<!--[if lte IE 8]>
-		  <link rel="stylesheet" href="__TMPL__Common/assets/css/ace-ie.min.css" />
-		<![endif]-->
-
-		<!-- inline styles related to this page -->
-
-		<!-- ace settings handler -->
-
-		<script src="__TMPL__Common/assets/js/ace-extra.min.js"></script>
-
-		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-
-		<!--[if lt IE 9]>
-		<script src="__TMPL__Common/assets/js/html5shiv.js"></script>
-		<script src="__TMPL__Common/assets/js/respond.min.js"></script>
-		<![endif]-->
-	</head>
-
-	<body>
-		<div class="navbar navbar-default" id="navbar">
-			<script type="text/javascript">
-				try{ace.settings.check('navbar' , 'fixed')}catch(e){}
-			</script>
-
-			<div class="navbar-container" id="navbar-container">
-				<div class="navbar-header pull-left">
-					<a href="/" class="navbar-brand">
-						<small>
-							<i class="icon-leaf"></i>
-							<?php echo C('SYSTEM_TITLE'); ?>
-						</small>
-					</a><!-- /.brand -->
-				</div><!-- /.navbar-header -->
+    <div class="topleft">
+    <a href="/"><img src="__TMPL__Common/images/logo.png" title="系统首页" /></a>
+    </div>
