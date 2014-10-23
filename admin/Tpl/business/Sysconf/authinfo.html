@@ -1,48 +1,26 @@
 <!-- 整个公共页头 -->
 <include file="Public:head" />
 <!-- 整个公共页头结束 -->
-				
-<!-- 主导航 -->
-<div class="navbar-header pull-left" >
-<include file="Public:nav" />
-</div>
-				
-<!-- 主导航右边 -->
-<div class="navbar-header pull-right" role="navigation">
-<include file="Public:acenav" />
-</div><!-- /.navbar-header -->
 
-<!-- 左边列表 -->
-<include file="Public:leftnav" />
+ <div class="mainindex" style="width:80%;position:relative;left:-100px;">
+ 	<link rel="stylesheet" type="text/css" href="__TMPL__Common/css/nec.css">
+ 	
+ 	<table class="m-table">
+ 	    <tbody>
+ 	        <tr>
+ 	        	<td>是否为服务到家的商家</td>
+ 	        	<td>
+ 	        		<?php if ($route): ?>
+	    		<span style="color:blue">您是服务到家里的入驻商家</span>
+	    	<?php else: ?>
+	    		<span style="color:blue">您还不是是服务到家里的入驻商家</span>
+	    	<?php endif; ?>
+ 	        	</td>
+ 	        </tr>
+ 	    </tbody>
+ 	</table>
+ </div>
 
-<div style="position:absolute;top:88px;left:188px;width:100%;">
-	<div class="place" style="height:36px;">
-	    <span>位置：</span>
-	    <ul class="placeul">
-	    <li><a href="javascript:;">认证信息</a></li>
-	    </ul>
-	    </div>
-	    
-	    <div class="mainindex" style="width:80%;position:relative;left:-100px;">
-	    	<link rel="stylesheet" type="text/css" href="__TMPL__Common/css/nec.css">
-	    	
-	    	<table class="m-table">
-	    	    <tbody>
-	    	        <tr>
-	    	        	<td>是否为服务到家的商家</td>
-	    	        	<td>
-	    	        		<?php if ($route): ?>
-					    		<span style="color:blue">您是服务到家里的入驻商家</span>
-					    	<?php else: ?>
-					    		<span style="color:blue">您还不是是服务到家里的入驻商家</span>
-					    	<?php endif; ?>
-	    	        	</td>
-	    	        </tr>
-	    	    </tbody>
-	    	</table>
-	    	
-	    </div>
-</div>
-
-</body>
-</html>
+<!-- 整个公共页尾 -->
+<include file="Public:footer" />
+<!-- 整个公共页尾结束 -->

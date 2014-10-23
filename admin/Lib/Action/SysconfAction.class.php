@@ -23,14 +23,12 @@ class SysconfAction extends CommonAction
 		// 商家名
 		$name = $business[0]['name'];
 		$biz_id = $business[0]['id'];
+		
 		// 城市列表
 		$city = D('AreaNew');
 		$city_list = $city->order("`sort` DESC")->select();
 		$city_tree = list_to_tree($city_list,$pk='id',$pid='pid',$child='_child',$root=0);
-		// 
-		// echo "<pre>";
-		// var_dump($city_tree);
-		// die();
+
 		$city_tree2 = tree_to_list2($city_tree);
 
 		if ($_POST) {
@@ -49,6 +47,7 @@ class SysconfAction extends CommonAction
 				$this->error('商户信息保存失败');
 			}
 		}else {
+			
 			$this->assign('business_account',$name);
 			$this->assign('business_info',$business[0]);
 			$this->assign('citys',$city_tree2);
@@ -65,6 +64,7 @@ class SysconfAction extends CommonAction
 		// 判断是不是服务到家商家
 		$route = D('supplier_location')->where("`id` = {$location_id}")->getField('route');
 		$this->assign('route',$route);
+		
 		$this->display();
 	}
 

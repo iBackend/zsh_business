@@ -313,7 +313,6 @@ class CommonAction extends AuthAction{
 		}
 	}
 	
-	
 	public function toogle_status()
 	{
 		$id = intval($_REQUEST['id']);
@@ -326,4 +325,5 @@ class CommonAction extends AuthAction{
 		save_log($info.l("SET_EFFECT_".$n_is_effect),1);
 		$this->ajaxReturn($n_is_effect,l("SET_EFFECT_".$n_is_effect),1)	;	
 	}
+
 }

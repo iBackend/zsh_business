@@ -39,13 +39,41 @@ class BaseAction extends Action{
 
 		// 主菜单列表
 		$main_menu = M('Menu')->where("`pid` = 0 and `tip` = 'business'")->select();
+		//当前显示的菜单
+		$current_menu = array();
 		// 从菜单列表
 		foreach ($main_menu as $key => $value) {
 			$main_menu[$key]['below_menu'] = $this->getBelowMenu($value['id']);
+			if (strstr($value['url'], MODULE_NAME)){
+				$current_menu = $main_menu[$key];
+			}
 		}
 
 		$this->assign('estatemenu1',$main_menu);
-
+		$this->assign('currentmenu',$current_menu);
+		
+		$urls = array();
+		$urls[] = $current_menu;
+		foreach ($current_menu['below_menu'] as $key=>$value)
+		{
+			if ($_SERVER['REQUEST_URI'] == $value['url'].'&' || $_SERVER['REQUEST_URI'] == $value['url']){
+				$urls[] = $value;
+			}
+		}
+		
+		$this->generate_url($urls);
+	}
+	
+	private function generate_url($url)
+	{
+		$html = '';
+		for($i=0;$i<count($url);$i++){
+			$html .= '<a href="'.$url[$i]['url'].'">'.$url[$i]['title'].'</a>';
+			if($i<count($url)-1){
+				$html .= '&gt;';
+			}
+		}
+		$this->assign('url',$html);
 	}
 
 	// 获取从菜单

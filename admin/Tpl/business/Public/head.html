@@ -17,9 +17,54 @@ $(function(){
 
 
 </head>
-
+<!-- 整个公共页头 -->
 <body style="background:url(__TMPL__Common/images/topbg.gif) repeat-x;overflow-x:hidden">
 
     <div class="topleft">
     <a href="/"><img src="__TMPL__Common/images/logo.png" title="系统首页" /></a>
     </div>
+	
+	<!-- 主导航 -->
+	<div class="navbar-header pull-left" >
+		<ul class="nav">
+			<volist name="estatemenu1" id="vo">
+				<li>
+				<a href="{$vo.url}" class="">
+					<img src="__TMPL__Common/images/icon0<?php echo ($key+1);?>.png"  /><h2>{$vo.title}</h2>
+				</a>
+				</li>
+			</volist>
+		</ul>
+	</div>
+	
+	<!-- 主导航右边 -->
+	<div class="navbar-header pull-right" role="navigation">
+		<div class="topright">    
+		<ul>
+		<li><span><img src="__TMPL__Common/images/help.png" title="帮助"  class="helpimg"/></span><a href="#">帮助</a></li>
+		<li><a href="#">关于</a></li>
+		<li><a href="/index.php?m=Public&a=do_loginout&">退出</a></li>
+		</ul>
+		
+		<div class="user">
+		<span>欢迎Admin</span>
+		<i>消息</i>
+		<b>5</b>
+		</div>    
+		
+		</div>
+	</div><!-- /.navbar-header -->
+	
+	<!-- 左边列表 -->
+	<include file="Public:leftnav" />
+	
+	<!-- 主体内容 -->
+	<div style="position:absolute;top:88px;left:188px;width:100%;">
+	
+		<!-- 导航位置 -->
+		<div class="place" style="height:36px;">
+		    <span>位置：</span>
+		    <ul class="placeul">
+		    	<li>{$url}</li>
+		    </ul>
+	    </div>
