@@ -1,39 +1,262 @@
 <!-- 整个公共页头 -->
 <include file="Public:head" />
 <!-- 整个公共页头结束 -->
-				
+
+
+<script type="text/javascript">
+<!--
+$(function(){
+	loadGrid();
+	init();
+});
+
+function init(){
+	$('#save').click(function(e){
+    	if ($(this).linkbutton("options").disabled) {
+            return;
+        }
+    	save(e);
+    });
+}
+
+//加载数据列表
+function loadGrid() {
+    $('#dgData').datagrid({
+        url: '/index.php?m=Goodmanage&a=goods_list',
+        method: 'get',
+        fitColumns: true, 
+        remoteSort: false,  //列少设为true,列多设为false
+        pagination: true,
+        pageSize: 20,
+        pageList: [10, 20, 40, 60, 80, 100],
+        fit: true,
+        singleSelect: true,
+        sortName: 'id',
+        sortOrder: 'desc',
+        idField: 'id',
+        columns: [[
+			{ field: 'id', title: 'ID', width: 60, sortable: true, align: 'center' },
+	          { field: 'name', title: '商品名称', width: 180, sortable: true, align: 'center' },
+	          { field: 'current_price', title: '单价', width: 100, sortable: true, align: 'center' },
+	          { field: 'name', title: '数目', width: 100, sortable: true, align: 'center' },
+	          { field: 'category', title: '类型', width: 180, sortable: true, align: 'center' },
+	          { field: 'is_effect_val', title: '是否上架', width: 80, sortable: true, align: 'center' },
+	          { field: 'description', title: '商品描述', width: 220, sortable: true, align: 'center' }
+          ]],
+        toolbar: "#toolbar",
+        onBeforeLoad: function (param) {
+            $('#search_form').find('input').each(function (index) {
+                param[this.name] = $(this).val();
+            });
+            $('#search_form').find('select').each(function (index) {
+                param[this.name] = $(this).val();
+            });
+        }
+    });
+}
+
+//新增
+function addGood() {
+	clear();
+    $('#edit_window').window('setTitle','新增商品');
+    $('#edit_window').window('open');
+}
+
+//修改
+function updateGood(){
+    var rows =  $('#dgData').datagrid('getSelections'); 
+    if (rows.length == 0) { 
+        showError('请选择一条记录进行操作!'); 
+        return;
+    } 
+    if (rows.length>1) 
+    { 
+        showError('只能选择一条记录进行操作!'); 
+        return;
+    } 
+    var row = rows[0];
+    
+    $("#id").val(row.id);
+    $("#name").val(row.name);
+    $('#sort').numberbox('setValue', row.sort);
+
+	$('#edit_window').window('setTitle','修改商品');
+	$('#edit_window').window('open');
+}
+
+function clear(){
+	$("#name").val("");
+	$('#sort').numberbox('setValue', 1);
+}
+
+//保存
+function save(e) {
+    if ($('#edit_form').form('validate')) {
+        $.ajax({
+            url: '/index.php?m=Goodmanage&a=saveGood',
+            data: $('#edit_form').serialize(),
+            success: function (r) {
+            	if(r.status==1){
+             		showInfo(r.info);
+             		$('#dgData').datagrid('reload');
+             		$('#edit_window').window('close');
+             	}else {
+             		showError(r.info);
+             	}
+            },
+            complete:function(){
+            	clearLoading();
+            	$("#save").linkbutton('enable');
+            }
+        });
+        showLoading(e);
+    	$("#save").linkbutton('disable');
+    }
+}
+
+
+//数据删除
+function deleteGood() {
+   var rows = $('#dgData').datagrid('getSelections'); 
+   if (rows.length == 0) { 
+       showError('请选择一条记录进行操作!'); 
+       return;
+   } 
+   if (rows.length>1) 
+   { 
+       showError('只能选择一条记录进行操作!'); 
+       return;
+   } 
+   var row = rows[0];
+   
+   $.messager.confirm('提示信息', '确认要删除类型“'+row.name+'”？', function (isClickedOk) {
+       if (isClickedOk) {
+           $.ajax({
+               url: '/index.php?m=Goodmanage&a=deleteGood',
+               data: { "id": row.id },
+               success: function (r) {
+            	   if(r.status==1){
+                		showInfo(r.info);
+                		$('#dgData').datagrid('reload');
+                	}else {
+                		showError(r.info);
+                	}
+               }
+           });
+       }
+   })
+}
+
+//-->
+</script>
 	    
-	    <div class="mainindex" style="width:80%;position:relative;left:-100px;">
-	    	<link rel="stylesheet" type="text/css" href="__TMPL__Common/css/nec.css">
-	    	<table class="m-table">
-			<thead>
-				<tr>
-					<th>编号</th>
-					<th>商品名称</th>
-					<th>简要描述</th>
-					<th>价格</th>
-					<th>分类</th>
-					<th>上架时间</th>
-					<th>操作</th>
-				</tr>
-			</thead>
-			<tbody>
-				<?php foreach ($deal_list as $key => $value): ?>
-					<tr>
-						<td><?php echo $value['id']; ?></td>
-						<td><?php echo $value['name']; ?></td>
-						<td><?php echo $value['brief']; ?></td>
-						<td><?php echo $value['current_price']; ?></td>
-						<td><?php echo $value['shop_cate_id']; ?></td>
-						<td><?php echo date('Y-m-d',$value['create_time']); ?></td>
-						<td>
-							<a href="" class="u-btn btn-xs">下架</a>
-						</td>
-					</tr>
-				<?php endforeach; ?>
-			</tbody>
-			</table>
+	    <div class="mainindex"  style="width:80%;position:relative;left:100px;">
+	     	<!-- 订单信息 -->
+		    <div class="easyui-panel" fit='true' >
+		        <table id="dgData" style="height:420px;"></table>
+		    </div>
 	    </div>
+	    
+	    
+	    	<div id="toolbar" style="padding:5px;height:auto">
+		     	 <div style="margin-bottom:5px">
+		            <a href="javascript:void(0)" onclick="addGood();" class="easyui-linkbutton" iconCls="icon-add" >添加</a>
+		            <a href="javascript:void(0)" onclick="updateGood();" class="easyui-linkbutton" iconCls="icon-edit" >修改</a>
+		            <a href="javascript:void(0)" onclick="deleteGood();" class="easyui-linkbutton" iconCls="icon-remove" >删除</a>
+		            <a href="javascript:void(0)" onclick="template();" class="easyui-linkbutton" iconCls="icon-arrow_up" >上架</a>
+		            <a href="javascript:void(0)" onclick="template();" class="easyui-linkbutton" iconCls="icon-arrow_down" >下架</a>
+		         </div>
+		    	 <div style="height:40px;margin-bottom:5px;" >
+		          <form id="search_form" method="post">
+		                <table width="100%" cellspacing="1" cellpadding="0" border="0" class="form_table">
+		                    <tr>
+		                    	
+		                        <td style="text-align: right; width:80px;">商品类型：</td>
+		                        <td style="text-align: left; width:130px;">
+		                        	<select id="search_cate_id" name="search_cate_id" style="width:122px;">
+		                        		<option value="">所有...</option>
+		                        		<volist name="cate_list" id="cate">
+		                        			<option value="{$cate.id}">{$cate.name}</option>
+										</volist>
+		                        	</select>
+		                        </td>
+		                        <td style="text-align: right; width:80px;">商品名称：</td>
+		                        <td style="text-align: left; width:130px;">
+		                        	<input type="text" id="search_name" name="search_name" style="width:120px;">
+		                        </td>
+		                        
+		                        <td style="text-align: left; width:430px;">
+		                        	<a href="javascript:void(0)" onclick="searchGood();" class="easyui-linkbutton" icon="icon-search">查找</a>
+		                        </td>
+		                        <td>&nbsp;</td>
+		                    </tr>
+		                </table>
+		           </form>
+		     	</div>
+		    </div>
+	    
+		    
+    <div id="edit_window" class="easyui-window" closed="true" title="数据维护" style="width: 460px;
+        height: 640px; padding: 0px;" >
+        <div class="easyui-layout" fit="true">
+            <div region="center" border="false" fit="true" style="padding: 0px; background: #fff; border: 0px;">
+                <form id="edit_form" name="edit_form" method="post" style="padding-top:20px;">
+                
+                <div title="隐藏参数">
+                    <input type="hidden" id="id" name="id" value="0" />
+                </div>
+                
+                <table width="100%" cellspacing="1" cellpadding="0" border="0" class="form_table">
+                	<tr style="line-height:60px;">
+                        <th style="text-align: right">商品名称：</th>
+                        <td style="width:60%;">
+                        	<input id="name" name="name" class="easyui-validatebox" data-options="required:true"  maxlength="80" />
+                        </td>
+                    </tr>
+                    <tr style="line-height:60px;">
+                        <th style="text-align: right">单价：</th>
+                        <td>
+                        	<input id="current_price" name="current_price" class="easyui-numberbox" data-options="required:true"  maxlength="20"/>
+                        </td>
+                    </tr>
+                    <tr style="line-height:60px;">
+                        <th style="text-align: right">库存数量：</th>
+                        <td>
+                        	<input id="max_bought" name="max_bought" class="easyui-numberbox" data-options="required:true"  maxlength="20"/>
+                        </td>
+                    </tr>
+                    <tr style="line-height:60px;">
+                        <th style="text-align: right">商品类型：</th>
+                        <td>
+                        	<select id="shop_cate_id" name="shop_cate_id" >
+                        		<volist name="cate_list" id="cate">
+                        			<option value="{$cate.id}">{$cate.name}</option>
+								</volist>
+                        	</select>
+                        </td>
+                    </tr>
+                    <tr style="line-height:60px;">
+                        <th style="text-align: right">商品描述：</th>
+                        <td>
+                        	<textarea id="description" name="description" rows="20" cols="14"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: right">状态：</th>
+                        <td>
+                        	<label><input type="radio" name="is_effect" value="1" checked="checked"/>上架</label>
+                        	<label><input type="radio" name="is_effect" value="1" />下架</label>
+                        </td>
+                    </tr>
+                </table>
+                </form>
+            </div>
+            <div region="south" border="false" style="text-align: center;  height:35px; line-height: 10px; padding: 0px;">
+                <a id="save" icon="icon-save" class="easyui-linkbutton" href="javascript:void(0)">确定</a>
+                <a id="btn_edit_cancel" onclick="$('#edit_window').window('close');" class="easyui-linkbutton" icon="icon-cancel" href="javascript:void(0)" data-options="draggable:false">关闭</a>
+            </div>
+        </div>
+    </div>
 <!-- 整个公共页尾 -->
 <include file="Public:footer" />
 <!-- 整个公共页尾结束 -->

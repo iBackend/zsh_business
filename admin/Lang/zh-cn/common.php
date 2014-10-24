@@ -934,6 +934,12 @@ return array(
 	'PAY_AMOUNT'	=>	'应付总额',
 	'PAYMENT_TYPE'	=>	'支付方式',
 	'PAYMENT_STATUS'	=>	'支付状态',
+	
+	'ORDER_STATUS_0'	=>	'订单已关闭',
+	'ORDER_STATUS_1'	=>	'用户已下单',
+	'ORDER_STATUS_2'	=>	'商家已发货',
+	'ORDER_STATUS_3'	=>	'用户确认收货',
+	
 	//团购订单
 	'DEAL_ORDER'	=>	'订单列表',
 	'DELIVERY_STATUS'	=>	'配送状态',

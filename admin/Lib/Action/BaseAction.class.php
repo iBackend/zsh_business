@@ -48,20 +48,26 @@ class BaseAction extends Action{
 				$current_menu = $main_menu[$key];
 			}
 		}
-
-		$this->assign('estatemenu1',$main_menu);
-		$this->assign('currentmenu',$current_menu);
 		
 		$urls = array();
-		$urls[] = $current_menu;
-		foreach ($current_menu['below_menu'] as $key=>$value)
-		{
-			if ($_SERVER['REQUEST_URI'] == $value['url'].'&' || $_SERVER['REQUEST_URI'] == $value['url']){
-				$urls[] = $value;
+		if($current_menu){
+			$urls[] = $current_menu;
+			foreach ($current_menu['below_menu'] as $key=>$value)
+			{
+				if ($_SERVER['REQUEST_URI'] == $value['url'].'&' || $_SERVER['REQUEST_URI'] == $value['url']){
+					$urls[] = $value;
+				}
 			}
+		}else {
+			//显示首页
+			$current_menu = array("title"=>'首页',"url"=>'/');
+			$urls[] = $current_menu;
+			$current_menu['below_menu'] = $main_menu;
 		}
-		
 		$this->generate_url($urls);
+		
+		$this->assign('estatemenu1',$main_menu);
+		$this->assign('currentmenu',$current_menu);
 	}
 	
 	private function generate_url($url)
@@ -129,6 +135,48 @@ class BaseAction extends Action{
         }
         header('Content-type: image/jpeg');
         echo $fileres;
+    }
+    
+    
+    
+    
+    /**
+     * 分页的信息加入条件的数组
+     *
+     * @access  public
+     * @return  array
+     */
+    public function page_and_size($filter)
+    {
+    	if(empty($filter['page_size'])){
+    		if (isset($_REQUEST['page_size']) && intval($_REQUEST['page_size']) > 0)
+    		{
+    			$filter['page_size'] = intval($_REQUEST['page_size']);
+    		}
+    		elseif (isset($_COOKIE['ECSCP']['page_size']) && intval($_COOKIE['ECSCP']['page_size']) > 0)
+    		{
+    			$filter['page_size'] = intval($_COOKIE['ECSCP']['page_size']);
+    		}
+    		else
+    		{
+    			$filter['page_size'] = 25;
+    		}
+    	}
+    
+    	/* 每页显示 */
+    	$filter['page'] = (empty($_REQUEST['page']) || intval($_REQUEST['page']) <= 0) ? 1 : intval($_REQUEST['page']);
+    
+    	/* page 总数 */
+    	$filter['page_count'] = (!empty($filter['record_count']) && $filter['record_count'] > 0) ? ceil($filter['record_count'] / $filter['page_size']) : 1;
+    
+    	/* 边界处理 */
+    	if ($filter['page'] > $filter['page_count'])
+    	{
+    		$filter['page'] = $filter['page_count'];
+    	}
+    
+    	$filter['start'] = ($filter['page'] - 1) * $filter['page_size'];
+    	return $filter;
     }
 }
 ?>

@@ -18,59 +18,73 @@ class GoodmanageAction extends CommonAction
 
 	public function category()
 	{
-		$bid = $this->bid;
-		$shop_cate = D('ShopCate');
-		$map['pid'] = $bid;
-		$this->_list($shop_cate,$map,'sort');
 		$this->display();
 	}
+	
+	public function category_list()
+	{
+		$list = $this->cate_list();
+		echo json_encode($list);
+	}
 
-	// 增加类目
-	public function addcategory()
+	//添加或者修改商品类型
+	public function saveCate()
 	{
 		$bid = $this->bid;
-		if ($_POST) {
+		$id = empty($_REQUEST['id'])?0:intval($_REQUEST['id']);
+		if($id==0){
+			
 			$model = D('ShopCate');
 			if ($model->create()) {
 				$model->pid = $bid;
 				$model->is_effect = 1;
 				if ($model->add()) {
-					$this->success('商品类目添加成功');
+					$this->success('商品类型添加成功', true);
 				}else {
-					$this->error('商品类目添加失败');
+					$this->error('商品类型添加失败', true);
 				}
 			}else {
-				$this->error('数据错误');
+				$this->error('数据错误', true);
 			}
+			
 		}else {
-			$this->display();
+			
+			$sql = "update ".DB_PREFIX."shop_cate 
+				set name = '".$_REQUEST['name']."',sort='".$_REQUEST['sort']."' where id=".$id;
+			$GLOBALS['db']->query($sql);
+			$this->success('商品类型修改成功', true);
 		}
 	}
-
-	public function dcategory()
+	
+	
+	//删除商品类型
+	public function deleteCate()
 	{
-		$id = $_GET['id'];
+		$id = $_REQUEST['id'];
 		$model = D('ShopCate');
+		//判断此类型是否被使用
+		$sql = "select count(1) from ".DB_PREFIX."deal where shop_cate_id=".$id;
+		$count = $GLOBALS['db']->getOne($sql);
+		if($count){
+			$this->error('此类型已经被使用，不能够直接删除！', true);
+			return;
+		}
 		$model->delete($id);
-		$this->success('删除成功');
+		$this->success('删除成功', true);
 	}
 
 	public function goodlist()
 	{
-		$bid = $this->bid;
-		$location = M('supplier_account_location_link')->where("`account_id` = {$bid}")->find();
-		$location_id = $location['location_id'];
-		// 商品关联表
-		$deal_list = $GLOBALS['db']->getAll("SELECT * FROM ".DB_PREFIX."deal_location_link a LEFT JOIN ".DB_PREFIX."deal b ON a.`deal_id` = b.`id` WHERE a.`location_id` = ".$location_id." order by b.`id` desc");
-		foreach ($deal_list as $key => $value) {
-			$deal_list[$key]['shop_cate_id'] = M('ShopCate')->where("`id` = {$value['shop_cate_id']}")->getField('name');
-		}
-
 		// 输出分类
-		$cate_list = D('ShopCate')->where("`pid` = {$bid}")->select();
+		$cate_list = D('ShopCate')->where("`pid` = {$this->bid}")->select();
 		$this->assign('cate_list',$cate_list);
-		$this->assign('deal_list',$deal_list);
 		$this->display();
+	}
+	
+	public function goods_list()
+	{
+		$list = $this->good_list();
+		echo json_encode($list);
 	}
 
 	public function addgood()
@@ -124,10 +138,87 @@ class GoodmanageAction extends CommonAction
 		
 	}
 
+	
+	
+	/**
+	*  返回商品类型数据
+	* @access  public
+	* @param
+	* @return void
+	*/
+	function cate_list()
+	{
+		$filter = array();
+		$filter['sort']    = empty($_REQUEST['sort'])    ? 'id' : trim($_REQUEST['sort']);
+		$filter['order'] = empty($_REQUEST['order']) ? 'DESC'     : trim($_REQUEST['order']);
+		$filter['page'] = empty($_REQUEST['page']) ? '1'     : trim($_REQUEST['page']);
+		$filter['page_size']	= empty($_REQUEST['rows']) ? '25'     : trim($_REQUEST['rows']);
+		
+		// 订单筛选
+		$where = " WHERE pid IN (".$this->bid.")";
+		$sql = "SELECT COUNT(*) FROM " . DB_PREFIX."shop_cate".$where;
+		$filter['record_count'] = $GLOBALS['db']->getOne($sql);
+	
+			/* 分页大小 */
+		$filter = $this->page_and_size($filter);
+	
+		$sql = "SELECT * ".
+		" FROM " . DB_PREFIX."shop_cate".$where.
+		" ORDER by " . $filter['sort'] . ' ' . $filter['order'] .
+		" LIMIT " . $filter['start'] . ',' . $filter['page_size'];
+		
+		$list = $GLOBALS['db']->getAll($sql);
+		$arr = array('rows' => $list, 'filter' => $filter, 'page' => $filter['page_count'], 'total' => $filter['record_count']);
+		return $arr;
+	}
+	
+	/**
+	*  返回商品数据
+	* @access  public
+	* @param
+	* @return void
+	*/
+	function good_list(){
+		$filter = array();
+		$filter['sort']    = empty($_REQUEST['sort'])    ? 'id' : trim($_REQUEST['sort']);
+		$filter['order'] = empty($_REQUEST['order']) ? 'DESC'     : trim($_REQUEST['order']);
+		$filter['page'] = empty($_REQUEST['page']) ? '1'     : trim($_REQUEST['page']);
+		$filter['page_size']	= empty($_REQUEST['rows']) ? '25'     : trim($_REQUEST['rows']);
+		
+		$bid = $this->bid;
+		$location = M('supplier_account_location_link')->where("`account_id` = {$bid}")->find();
+		$location_id = $location['location_id'];
+		
+		$where = " WHERE id IN (select deal_id from ".DB_PREFIX."deal_location_link where location_id=$location_id) ";
+		$sql = "SELECT COUNT(*) FROM " . DB_PREFIX."deal".$where;
+		$filter['record_count'] = $GLOBALS['db']->getOne($sql);
+		
+		/* 分页大小 */
+		$filter = $this->page_and_size($filter);
+		
+		$sql = "SELECT * ".
+				" FROM " . DB_PREFIX."deal".$where.
+				" ORDER by " . $filter['sort'] . ' ' . $filter['order'] .
+				" LIMIT " . $filter['start'] . ',' . $filter['page_size'];
+		
+		$list = $GLOBALS['db']->getAll($sql);
+		foreach ($list as $key => $value) {
+			$list[$key]['category'] = M('ShopCate')->where("`id` = {$value['shop_cate_id']}")->getField('name');
+			$list[$key]['current_price'] = '￥'.$value['current_price'];
+			$list[$key]['is_effect_val'] = $value['is_effect']?"上架":"下架";
+		}
+		
+		$arr = array('rows' => $list, 'filter' => $filter, 'page' => $filter['page_count'], 'total' => $filter['record_count']);
+		return $arr;
+	}
+			
 	public function warehouse()
 	{
 		$this->display();
 	}
+	
+	
 
+	
 }
 ?>
