@@ -11,11 +11,17 @@ $(function(){
 });
 
 function init(){
-	$('#save').click(function(e){
+	$('#save_btn').click(function(e){
     	if ($(this).linkbutton("options").disabled) {
             return;
         }
     	save(e);
+    });
+	$('#delete_btn').click(function(e){
+    	if ($(this).linkbutton("options").disabled) {
+            return;
+        }
+    	deleteCate(e);
     });
 }
 
@@ -52,17 +58,10 @@ function addCate() {
 
 //修改
 function updateCate(){
-    var rows =  $('#dgData').datagrid('getSelections'); 
-    if (rows.length == 0) { 
-        showError('请选择一条记录进行操作!'); 
-        return;
-    } 
-    if (rows.length>1) 
-    { 
-        showError('只能选择一条记录进行操作!'); 
-        return;
-    } 
-    var row = rows[0];
+	var row = selectRow();
+	if(!row){
+		return;
+	}
     
     $("#id").val(row.id);
     $("#name").val(row.name);
@@ -104,18 +103,11 @@ function save(e) {
 
 
 //数据删除
-function deleteCate() {
-   var rows = $('#dgData').datagrid('getSelections'); 
-   if (rows.length == 0) { 
-       showError('请选择一条记录进行操作!'); 
-       return;
-   } 
-   if (rows.length>1) 
-   { 
-       showError('只能选择一条记录进行操作!'); 
-       return;
-   } 
-   var row = rows[0];
+function deleteCate(e) {
+	var row = selectRow();
+	if(!row){
+		return;
+	}
    
    $.messager.confirm('提示信息', '确认要删除类型“'+row.name+'”？', function (isClickedOk) {
        if (isClickedOk) {
@@ -129,18 +121,27 @@ function deleteCate() {
                 	}else {
                 		showError(r.info);
                 	}
+               },
+               complete:function(){
+	               	clearLoading();
+	               	$("#delete_btn").linkbutton('enable');
                }
            });
        }
-   })
+   });
+   showLoading(e);
+   $("#delete_btn").linkbutton('disable');
 }
 
 //-->
 </script>
 	    
-	    <div class="mainindex"  style="width:80%;position:relative;left:100px;">
-		    <div class="easyui-panel" fit='true' >
-		        <table id="dgData" style="height:420px;"></table>
+	    <div class="mainindex" >
+	    	<div class="formbody">
+			    <div class="formtitle"><span>商品类型列表</span></div>
+			    <div class="easyui-panel" fit='true' >
+			    	<table id="dgData" style="height:520px;"></table>
+			    </div>
 		    </div>
 	    </div>
 	    
@@ -148,7 +149,7 @@ function deleteCate() {
 		     	 <div style="margin-bottom:5px">
 		            <a href="javascript:void(0)" onclick="addCate();" class="easyui-linkbutton" iconCls="icon-add" >添加</a>
 		            <a href="javascript:void(0)" onclick="updateCate();" class="easyui-linkbutton" iconCls="icon-edit" >修改</a>
-		            <a href="javascript:void(0)" onclick="deleteCate();" class="easyui-linkbutton" iconCls="icon-remove" >删除</a>
+		            <a href="javascript:void(0)" id="delete_btn" class="easyui-linkbutton" iconCls="icon-remove" >删除</a>
 		         </div>
 	    </div>
 	    
@@ -177,7 +178,7 @@ function deleteCate() {
                 </form>
             </div>
             <div region="south" border="false" style="text-align: center;  height:35px; line-height: 10px; padding: 0px;">
-                <a id="save" icon="icon-save" class="easyui-linkbutton" href="javascript:void(0)">确定</a>
+                <a id="save_btn" icon="icon-save" class="easyui-linkbutton" href="javascript:void(0)">确定</a>
                 <a id="btn_edit_cancel" onclick="$('#edit_window').window('close');" class="easyui-linkbutton" icon="icon-cancel" href="javascript:void(0)" data-options="draggable:false">关闭</a>
             </div>
         </div>

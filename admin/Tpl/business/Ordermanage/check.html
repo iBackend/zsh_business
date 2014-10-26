@@ -2,19 +2,183 @@
 <include file="Public:head" />
 <!-- 整个公共页头结束 -->
 
-	    
-	    <div class="mainindex">
-	    <div class="xline"></div>
-	    <ul class="iconlist">
-		    <li><img src="__TMPL__Common/images/ico01.png" /><p><a href="#">管理设置</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico02.png" /><p><a href="#">发布文章</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico03.png" /><p><a href="#">数据统计</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico04.png" /><p><a href="#">文件上传</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico05.png" /><p><a href="#">目录管理</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico06.png" /><p><a href="#">查询</a></p></li> 
-	    </ul>
-	    </div>
 
+<script type="text/javascript">
+<!--
+$(function(){
+	loadGrid();
+	init();
+});
+
+function init(){
+	$('#check_btn').click(function(e){
+    	if ($(this).linkbutton("options").disabled) {
+            return;
+        }
+    	checkOrder(e);
+    });
+}
+
+//加载数据列表
+function loadGrid() {
+    $('#dgData').datagrid({
+        url: '/index.php?m=Ordermanage&a=orders_list',
+        method: 'get',
+        fitColumns: true, 
+        remoteSort: false,  //列少设为true,列多设为false
+        pagination: true,
+        pageSize: 20,
+        pageList: [10, 20, 40, 60, 80, 100],
+        fit: true,
+        singleSelect: true,
+        sortName: 'id',
+        sortOrder: 'desc',
+        idField: 'id',
+        columns: [[
+			{ field: 'id', title: 'ID', hidden: true},
+	          { field: 'order_sn', title: '订单编号', width: 180, sortable: true, align: 'center' },
+	          { field: 'user_name', title: '下单客户', width: 100, sortable: true, align: 'center' },
+	          { field: 'total_price', title: '总金额', width: 100, sortable: true, align: 'center',
+	        	  sorter:function(a,b){
+					  return parseInt(a)>parseInt(b)?1:-1;
+				  },
+				  formatter:function(value,row,index){
+					  return '￥'+value;
+				  }
+	          },
+	          { field: 'create_time', title: '下单时间', width: 100, sortable: true, align: 'center' },
+	          { field: 'type', title: '核对状态', width: 100, sortable: true, align: 'center',
+	        	  formatter:function(value,row,index){
+					  return parseInt(value)==1?"已核对":"未核对";
+				  }
+	          },
+	          { field: 'pay_status_val', title: '支付状态', width: 100, sortable: true, align: 'center' },
+	          { field: 'order_status_val', title: '订单状态', width: 100, sortable: true, align: 'center' }
+          ]],
+        toolbar: "#toolbar",
+        onBeforeLoad: function (param) {
+            $('#search_form').find('input').each(function (index) {
+                param[this.name] = $(this).val();
+            });
+            $('#search_form').find('select').each(function (index) {
+                param[this.name] = $(this).val();
+            });
+        }
+    });
+}
+
+
+
+function checkOrder(e){
+  var rows =  $('#dgData').datagrid('getSelections'); 
+  if (rows.length == 0) { 
+      showError('请选择一条记录进行操作!'); 
+      return;
+  } 
+  
+  if (rows.length>1) 
+  { 
+      showError('只能选择一条记录进行操作!'); 
+      return;
+  } 
+  var order = rows[0];
+  if(order.type==1){
+	  showError('订单“'+order.order_sn+'”已经核对过!'); 
+      return;
+  }
+		  
+  $.messager.confirm('提示信息', '确认订单“'+order.order_sn+'”账目无误？', function (isClickedOk) {
+      if (isClickedOk) {
+          $.ajax({
+              url: '/index.php?m=Ordermanage&a=checkOrder',
+              data: { "id": order.id },
+              success: function (r) {
+                   	if(r.status==1){
+                   		showInfo(r.info);
+                   		$('#dgData').datagrid('reload');
+                   	}else {
+                   		showError(r.info);
+                   	}
+              },
+			       complete:function(){
+			               	clearLoading();
+			               	$("#check_btn").linkbutton('enable');
+		              }
+			     });
+				showLoading(e);
+				$("#check_btn").linkbutton('disable');
+      }
+  });
+}
+
+function searchOrder(){
+	$('#dgData').datagrid('reload');
+}
+
+function refreshOrder(){
+	$('#search_order_sn').val('');
+	$('#search_checked').val('');
+	$('#search_user_name').val('');
+	$('#search_start').datebox('setValue','');
+	$('#search_end').datebox('setValue','');
+	searchOrder();
+}
+
+//-->
+</script>
+	    
+	    <div class="mainindex" >
+	    	<div class="formbody">
+			    <div class="formtitle"><span>账目核对</span></div>
+			    <div class="easyui-panel" fit='true' >
+			    	<table id="dgData" style="height:520px;"></table>
+			    </div>
+		    </div>
+	    </div>
+	    
+	    
+	    	<div id="toolbar" style="padding:5px;height:auto">
+		     	 <div style="margin-bottom:5px">
+		            <a href="javascript:void(0)" id="check_btn" class="easyui-linkbutton" iconCls="icon-application_side_expand" >核对</a>
+		         </div>
+		    	 <div style="height:40px;margin-bottom:5px;" >
+		          <form id="search_form" method="post">
+		                <table width="100%" cellspacing="1" cellpadding="0" border="0" class="form_table">
+		                    <tr>
+		                        <td style="text-align: right; width:120px;">下单时间从：</td>
+		                        <td style="text-align: left; width:250px;">
+		                        	<input id="search_start" name="search_start" class="easyui-datebox" style="width:88px;"/>到
+		                        	<input id="search_end" name="search_end" class="easyui-datebox" style="width:88px;"/>
+		                        </td>
+		                        <td style="text-align: right; width:90px;">核对状态：</td>
+		                        <td style="text-align: left; ">
+		                        	<select name="search_checked" id="search_checked">
+		                        		<option value="">所有...</option>
+		                        		<option value="1">已核对</option>
+		                        		<option value="0">未核对</option>
+		                        	</select>
+		                        </td>
+		                        <td style="text-align: right; width:80px;">订单号：</td>
+		                        <td style="text-align: left; width:130px;">
+		                        	<input type="text" id="search_order_sn" name="search_order_sn" style="width:100px;">
+		                        </td>
+		                        <td style="text-align: right;width:90px;">下单客户：</td>
+		                        <td style="text-align: left;width:130px;">
+		                        	<input type="text" id="search_user_name" name="search_user_name" style="width:100px;">
+		                        </td>
+		                        
+		                        <td style="text-align: left; width:230px;">
+		                        	<a href="javascript:void(0)" onclick="searchOrder();" class="easyui-linkbutton" icon="icon-search">查找</a>
+		                        	<a href="javascript:void(0)" onclick="refreshOrder();" class="easyui-linkbutton" icon="icon-reload">刷新</a>
+		                        </td>
+		                        <td>&nbsp;</td>
+		                    </tr>
+		                </table>
+		           </form>
+		     	</div>
+		    </div>
+	    
+		    
 <!-- 整个公共页尾 -->
 <include file="Public:footer" />
 <!-- 整个公共页尾结束 -->

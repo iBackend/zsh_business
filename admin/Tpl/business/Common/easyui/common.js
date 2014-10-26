@@ -1,4 +1,18 @@
-﻿$.extend($.fn.datagrid.defaults, {
+﻿function selectRow(){
+	var rows = $('#dgData').datagrid('getSelections'); 
+   if (rows.length == 0) { 
+       showError('请选择一条记录进行操作!'); 
+       return false;
+   } 
+   if (rows.length>1) 
+   { 
+       showError('只能选择一条记录进行操作!'); 
+       return false;
+   } 
+   return rows[0];
+}
+
+$.extend($.fn.datagrid.defaults, {
     fit: true,
 //    nowrap: false,
 //    striped: true,

@@ -1,20 +1,70 @@
 <!-- 整个公共页头 -->
 <include file="Public:head" />
 <!-- 整个公共页头结束 -->
+<script type="text/javascript">
+<!--
+$(function(){
+	$('#search_start').datebox('setValue', '{$search_start}');
+	$('#search_end').datebox('setValue', '{$search_end}');
+});
 
-	    
+function statistics(){
+	var search_start = $('#search_start').datebox('getValue');
+	if(!search_start){
+		showError("起始时间不能为空！");
+		return;
+	}
+	
+	var search_end = $('#search_end').datebox('getValue');
+	if(!search_end){
+		showError("截止时间不能为空！");
+		return;
+	}
+	
+	window.location = "/index.php?m=Ordermanage&a=ordercensus&search_start="+search_start+"&search_end="+search_end;
+	
+}
+//-->
+</script>
+
 	    <div class="mainindex">
-	    <div class="xline"></div>
-	    <ul class="iconlist">
-		    <li><img src="__TMPL__Common/images/ico01.png" /><p><a href="#">管理设置</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico02.png" /><p><a href="#">发布文章</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico03.png" /><p><a href="#">数据统计</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico04.png" /><p><a href="#">文件上传</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico05.png" /><p><a href="#">目录管理</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico06.png" /><p><a href="#">查询</a></p></li> 
-	    </ul>
-	    </div>
+	    	<link rel="stylesheet" type="text/css" href="__TMPL__Common/css/nec.css" />
 
+			<div class="formbody">
+			    <div class="formtitle"><span>订单统计</span></div>
+			    
+			    <div>
+			    	<label>下单时间从：<input id="search_start" name="search_start" class="easyui-datebox" style="width:100px;"/>到
+		                        	<input id="search_end" name="search_end" class="easyui-datebox" style="width:100px;"/></label>
+			    	<a href="javascript:void(0)" onclick="statistics();" class="easyui-linkbutton" icon="icon-database">统计</a>
+			    </div>
+			    
+			    
+	    	<table class="m-table">
+	    	    <thead>
+	    	        <tr><th class="">订单类型</th><th>订单数目</th><th class="cola">总金额</th></tr>
+	    	    </thead>
+	    	    <tbody>
+	    	        	<tr>
+	    	        		<td>已完成的订单</td>
+	    	        		<td>{$complement_number}</td>
+	    	        		<td>￥{$complement_total_price}</td>
+	    	        	</tr>
+	    	        	<tr>
+	    	        		<td>未完成的订单</td>
+	    	        		<td>{$uncomplement_number}</td>
+	    	        		<td>￥{$uncomplement_total_price}</td>
+	    	        	</tr>
+	    	        	<tr>
+	    	        		<td>关闭的订单</td>
+	    	        		<td>{$close_number}</td>
+	    	        		<td>￥{$close_total_price}</td>
+	    	        	</tr>
+	    	    </tbody>
+	    	</table>
+	    	
+	    	</div>
+	    </div>
 <!-- 整个公共页尾 -->
 <include file="Public:footer" />
 <!-- 整个公共页尾结束 -->

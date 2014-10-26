@@ -2,17 +2,64 @@
 <include file="Public:head" />
 <!-- 整个公共页头结束 -->
 
+<script type="text/javascript">
+<!--
+
+function checkReply(){
+	var admin_reply = $('#admin_reply').val();
+	if(!admin_reply){
+		showError("回复内容不能为空！");
+		$('#admin_reply').focus();
+		return false;
+	}
+	return true;
+}
+//-->
+</script>
+
 	    
 	    <div class="mainindex">
-	    <div class="xline"></div>
-	    <ul class="iconlist">
-		    <li><img src="__TMPL__Common/images/ico01.png" /><p><a href="#">管理设置</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico02.png" /><p><a href="#">发布文章</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico03.png" /><p><a href="#">数据统计</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico04.png" /><p><a href="#">文件上传</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico05.png" /><p><a href="#">目录管理</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico06.png" /><p><a href="#">查询</a></p></li> 
-	    </ul>
+	    
+	    <form action="/index.php?m=Comment&a=reply" class="form-horizontal" enctype="multipart/form-data" role="form" method="post" onsubmit="return checkReply();">
+	    	<div class="formbody">
+    			<input type="hidden" value="{$comment.id}" id="id" name="id"/>
+			    <div class="formtitle"><span>回复评论</span></div>
+			    
+			    <div>
+			    	<label>评论客户：{$comment.user_name}</label>
+			    	&nbsp;&nbsp;&nbsp;&nbsp;
+			    	<label>评论时间：{$comment.create_time|date='Y-m-d H:i:s',###}</label>
+			    </div>
+			    <div><label>评论内容:</label></div>
+			    <div>
+			    	<p style="margin: 0px; width: 661px; height: 136px;border:1px solid rgb(196, 229, 223);color:rgb(41, 25, 144);">
+			    		{$comment.content}
+			    	</p>
+			    </div>
+			    
+			    <div><label>回复内容:</label></div>
+			    
+			    <div>
+			    <?php if ($had_reply): ?>
+			    	<p style="margin: 0px; width: 661px; height: 236px;border:1px solid rgb(196, 229, 223);color:rgb(41, 25, 144);">
+			    		{$comment.admin_reply}
+			    	</p>
+       			<?php else: ?>
+			    	<textarea name="admin_reply" id="admin_reply" rows="" cols="" style="margin: 0px; width: 661px; height: 236px;"></textarea>
+			    	<font color="red">*</font>
+       			<?php endif; ?>
+	    	   </div>	
+	    	        			
+			    <div>
+			    <?php if (!$had_reply): ?>
+			    	<label>&nbsp;</label><input type="submit" class="btn" value="回复"/>
+			    <?php endif; ?>
+			    	
+	    			<label>&nbsp;</label><input type="button" class="btn" onclick="window.location='/index.php?m=Comment&a=commentlist';" value="返回评论列表"/>
+	    		</div>
+			 </div>
+		</form>
+	    
 	    </div>
 
 <!-- 整个公共页尾 -->

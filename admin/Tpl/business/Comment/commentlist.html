@@ -2,19 +2,135 @@
 <include file="Public:head" />
 <!-- 整个公共页头结束 -->
 
-	    
-	    <div class="mainindex">
-	    <div class="xline"></div>
-	    <ul class="iconlist">
-		    <li><img src="__TMPL__Common/images/ico01.png" /><p><a href="#">管理设置</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico02.png" /><p><a href="#">发布文章</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico03.png" /><p><a href="#">数据统计</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico04.png" /><p><a href="#">文件上传</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico05.png" /><p><a href="#">目录管理</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico06.png" /><p><a href="#">查询</a></p></li> 
-	    </ul>
-	    </div>
 
+<script type="text/javascript">
+<!--
+$(function(){
+	loadGrid();
+	init();
+});
+
+function init(){
+	$('#reply_btn').click(function(e){
+    	if ($(this).linkbutton("options").disabled) {
+            return;
+        }
+    	reply(e);
+    });
+}
+
+//加载数据列表
+function loadGrid() {
+    $('#dgData').datagrid({
+        url: '/index.php?m=Comment&a=comments_list',
+        method: 'get',
+        fitColumns: true, 
+        remoteSort: false,  //列少设为true,列多设为false
+        pagination: true,
+        pageSize: 20,
+        pageList: [10, 20, 40, 60, 80, 100],
+        fit: true,
+        singleSelect: true,
+        sortName: 'id',
+        sortComment: 'desc',
+        idField: 'id',
+        columns: [[
+	          { field: 'id', title: '评价编号', width: 80, sortable: true, align: 'center' },
+	          { field: 'user_name', title: '评论客户', width: 100, sortable: true, align: 'center' },
+	          { field: 'content', title: '评论内容简介', width: 300, sortable: true, align: 'center' },
+	          { field: 'create_time', title: '评论时间', width: 100, sortable: true, align: 'center' },
+	          { field: 'reply_flag', title: '回复状态', width: 100, sortable: true, align: 'center',
+	        	  formatter:function(value,row,index){
+					  return parseInt(value)==1?"已回复":"未回复";
+				  }
+	          }
+          ]],
+        toolbar: "#toolbar",
+        onBeforeLoad: function (param) {
+            $('#search_form').find('input').each(function (index) {
+                param[this.name] = $(this).val();
+            });
+            $('#search_form').find('select').each(function (index) {
+                param[this.name] = $(this).val();
+            });
+        }
+    });
+}
+
+
+
+function reply(e){
+	var row = selectRow();
+	if(!row){
+		return;
+	}
+	window.location = "/index.php?m=Comment&a=answer&id="+row.id;
+}
+
+
+function searchComment(){
+	$('#dgData').datagrid('reload');
+}
+
+function refreshComment(){
+	$('#search_reply').val('');
+	$('#search_user_name').val('');
+	$('#search_start').datebox('setValue','');
+	$('#search_end').datebox('setValue','');
+	searchComment();
+}
+
+//-->
+</script>
+	    
+	    <div class="mainindex" >
+	    	<div class="formbody">
+			    <div class="formtitle"><span>评论列表</span></div>
+			    <div class="easyui-panel" fit='true' >
+			    	<table id="dgData" style="height:520px;"></table>
+			    </div>
+		    </div>
+	    </div>
+	    
+	    
+	    	<div id="toolbar" style="padding:5px;height:auto">
+		     	 <div style="margin-bottom:5px">
+		            <a href="javascript:void(0)" id="reply_btn" class="easyui-linkbutton" iconCls="icon-report_go" >回复</a>
+		         </div>
+		    	 <div style="height:40px;margin-bottom:5px;" >
+		          <form id="search_form" method="post">
+		                <table width="100%" cellspacing="1" cellpadding="0" border="0" class="form_table">
+		                    <tr>
+		                    	
+		                        <td style="text-align: right; width:120px;">评论时间从：</td>
+		                        <td style="text-align: left; width:260px;">
+		                        	<input id="search_start" name="search_start" class="easyui-datebox" style="width:100px;"/>到
+		                        	<input id="search_end" name="search_end" class="easyui-datebox" style="width:100px;"/>
+		                        </td>
+		                        <td style="text-align: right; width:90px;">回复状态：</td>
+		                        <td style="text-align: left; ">
+		                        	<select name="search_reply" id="search_reply">
+		                        		<option value="">所有...</option>
+		                        		<option value="1">已回复</option>
+		                        		<option value="0">未回复</option>
+		                        	</select>
+		                        </td>
+		                        <td style="text-align: right; width:80px;">评论客户：</td>
+		                        <td style="text-align: left; width:130px;">
+		                        	<input type="text" id="search_user_name" name="search_user_name" style="width:120px;">
+		                        </td>
+		                        <td style="text-align: left; width:430px;">
+		                        	<a href="javascript:void(0)" onclick="searchComment();" class="easyui-linkbutton" icon="icon-search">查找</a>
+		                        	<a href="javascript:void(0)" onclick="refreshComment();" class="easyui-linkbutton" icon="icon-reload">刷新</a>
+		                        </td>
+		                        <td>&nbsp;</td>
+		                    </tr>
+		                </table>
+		           </form>
+		     	</div>
+		    </div>
+	    
+		    
 <!-- 整个公共页尾 -->
 <include file="Public:footer" />
 <!-- 整个公共页尾结束 -->

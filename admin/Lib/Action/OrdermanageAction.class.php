@@ -19,31 +19,11 @@ class OrdermanageAction extends CommonAction
 	// 订单列表
 	public function orderlist()
 	{
-		// 商家账号
-		$bid = $this->bid;
-		// 店铺ID
-		$location_id = M('supplier_account_location_link')->where("`account_id` = {$bid}")->getField('location_id');
-		// 商品组
-		$arr_deal_ids = D('deal_location_link')->where("`location_id` = {$location_id}")->select();
-		foreach ($arr_deal_ids as $key => $value) {
-			$arr_deal_ids_end[] = $value['deal_id'];
-		}
-		// 订单筛选
-		$where['deal_ids'] = array("IN",$arr_deal_ids_end);
-		$order_list = M("deal_order")->where($where)->order("`id` desc")->select();
-		// 带上附加字段
-		foreach ($order_list as $key => $value) {
-			$order_list[$key]['good_name'] = M('deal')->where("`id` = {$value['deal_ids']}")->getField('name');
-			$order_list[$key]['pay_status'] = L('PAY_STATUS_'.$value['pay_status']).'';
-			$order_list[$key]['order_status'] = L('ORDER_STATUS_'.$value['order_status']).'';
-		}
-		
-		$this->assign('order',$order_list);
 		$this->display();
 	}
 	
 	// 首页显示的订单列表
-	public function orderlist_startPage()
+	public function orders_list()
 	{
 		$order_list = $this->order_list();
 		echo json_encode($order_list);
@@ -66,8 +46,96 @@ class OrdermanageAction extends CommonAction
 		$this->success("关闭订单成功！",true);
 	}
 	
+	
+	/**
+	* 商品详情
+	*/
+	public function detailOrder()
+	{
+		$order = $this->getOrder($_REQUEST['id']);
+		$this->assign('order',$order[0]);
+		$this->assign('order_item',$order[0]['item']);
+		$this->assign('next_order',$order[1]);
+		$this->display();
+	}
+		
+	/**
+	 * 订单统计
+	 */
 	public function ordercensus()
 	{
+		if(!empty($_REQUEST['search_end']) && !empty($_REQUEST['search_start'])){
+			
+			$filter = array();
+			$filter['search_start'] = trim($_REQUEST['search_start']);
+			$filter['search_end'] = trim($_REQUEST['search_end']);
+			
+			$this->assign('search_start',$filter['search_start']);
+			$this->assign('search_end',$filter['search_end']);
+			
+			// 商家账号
+			$bid = $this->bid;
+			// 店铺ID
+			$location_id = M('supplier_account_location_link')->where("`account_id` = {$bid}")->getField('location_id');
+					// 商品组
+			$arr_deal_ids = D('deal_location_link')->where("`location_id` = {$location_id}")->select();
+			$arr_deal_ids_end = array();
+			foreach ($arr_deal_ids as $key => $value) {
+				$arr_deal_ids_end[] = $value['deal_id'];
+			}
+			// 订单筛选
+			$where = " WHERE deal_ids IN (".implode(",", $arr_deal_ids_end).")";
+			
+			if($filter['search_start']){
+				$where.=" AND create_time>=".strtotime($filter['search_start'])." ";
+			}
+			if($filter['search_end']){
+				$where.=" AND create_time<=".strtotime($filter['search_end'])." ";
+			}
+			
+			$sql = "SELECT *  FROM " . DB_PREFIX."deal_order".$where;
+			$list = $GLOBALS['db']->getAll($sql);
+			
+			/**
+			 * 	已完成的订单：order_status=3
+				未完成的订单：order_status!=3 && order_status!=0 
+				取消的订单：order_status=0
+			 */
+			//已完成的订单
+			$complement_number = 0;
+			$complement_total_price = 0;
+			
+			//未完成的订单
+			$uncomplement_number = 0;
+			$uncomplement_total_price = 0;
+			
+			//关闭的订单
+			$close_number = 0;
+			$close_total_price = 0;
+			
+			foreach ($list as $key => $value) {
+				if($value['order_status']==3){
+					$complement_number++;
+					$complement_total_price += $value['total_price'];
+					
+				}else if($value['order_status']==0){
+					$close_number++;
+					$close_total_price += $value['total_price'];
+					
+				}else{
+					$uncomplement_number++;
+					$uncomplement_total_price += $value['total_price'];
+				}
+			}
+			
+			$this->assign('complement_number',$complement_number);
+			$this->assign('complement_total_price',$complement_total_price);
+			$this->assign('uncomplement_number',$uncomplement_number);
+			$this->assign('uncomplement_total_price',$uncomplement_total_price);
+			$this->assign('close_number',$close_number);
+			$this->assign('close_total_price',$close_total_price);
+		}
+		
 		$this->display();
 	}
 
@@ -76,6 +144,12 @@ class OrdermanageAction extends CommonAction
 		$this->display();
 	}
 	
+	function checkOrder()
+	{
+		$sql = "update " . DB_PREFIX."deal_order set type=1 where id=".$_REQUEST['id'];
+		$GLOBALS['db']->query($sql);
+		$this->success("账目核对成功！");
+	}
 	
 	
 	
@@ -88,6 +162,14 @@ class OrdermanageAction extends CommonAction
 	function order_list()
 	{
 		$filter = array();
+		
+		$filter['search_start'] = empty($_REQUEST['search_start']) ? ''     : trim($_REQUEST['search_start']);
+		$filter['search_end'] = empty($_REQUEST['search_end']) ? ''     : trim($_REQUEST['search_end']);
+		$filter['search_order_sn'] = empty($_REQUEST['search_order_sn']) ? ''     : trim($_REQUEST['search_order_sn']);
+		$filter['search_user_name'] = empty($_REQUEST['search_user_name']) ? ''     : trim($_REQUEST['search_user_name']);
+		$filter['search_checked'] = isset($_REQUEST['search_checked']) ? trim($_REQUEST['search_checked']):'';
+		
+		
 		$filter['sort']    = empty($_REQUEST['sort'])    ? 'id' : trim($_REQUEST['sort']);
 		$filter['order'] = empty($_REQUEST['order']) ? 'DESC'     : trim($_REQUEST['order']);
 		$filter['page'] = empty($_REQUEST['page']) ? '1'     : trim($_REQUEST['page']);
@@ -105,6 +187,22 @@ class OrdermanageAction extends CommonAction
 		}
 		// 订单筛选
 		$where = " WHERE deal_ids IN (".implode(",", $arr_deal_ids_end).")";
+		
+		if($filter['search_start']){
+			$where.=" AND create_time>=".strtotime($filter['search_start'])." ";
+		}
+		if($filter['search_end']){
+			$where.=" AND create_time<=".strtotime($filter['search_end'])." ";
+		}
+		if($filter['search_order_sn']){
+			$where.=" AND order_sn LIKE '%".$filter['search_order_sn']."%' ";
+		}
+		if($filter['search_user_name']){
+			$where.=" AND user_name LIKE '%".$filter['search_user_name']."%' ";
+		}
+		if(isset($_REQUEST['search_checked']) && $filter['search_checked']!=''){
+			$where.=" AND type = '".$filter['search_checked']."' ";
+		}
 		
 		$sql = "SELECT COUNT(*) FROM " . DB_PREFIX."deal_order".$where;
 		$filter['record_count'] = $GLOBALS['db']->getOne($sql);
@@ -126,13 +224,47 @@ class OrdermanageAction extends CommonAction
 			$list[$key]['pay_status_val'] = L('PAY_STATUS_'.$value['pay_status']).'';
 			$list[$key]['order_status_val'] = L('ORDER_STATUS_'.$value['order_status']).'';
 			$list[$key]['create_time'] = date('Y-m-d H:i:s', $value['create_time']);//￥
-			$list[$key]['total_price'] = '￥'.$value['total_price'];
+			$list[$key]['total_price'] = sprintf("%.2f", $list[$key]['total_price']);
 		}
 	
 		$arr = array('rows' => $list, 'filter' => $filter,
 	        'page' => $filter['page_count'], 'total' => $filter['record_count']);
 	
 		return $arr;
+	}
+	
+	
+	function getOrder($id=''){
+		// 商家账号
+		$bid = $this->bid;
+		// 店铺ID
+		$location_id = M('supplier_account_location_link')->where("`account_id` = {$bid}")->getField('location_id');
+		// 商品组
+		$arr_deal_ids = D('deal_location_link')->where("`location_id` = {$location_id}")->select();
+		$arr_deal_ids_end = array();
+		foreach ($arr_deal_ids as $key => $value) {
+			$arr_deal_ids_end[] = $value['deal_id'];
+		}
+		// 订单筛选
+		$where = " WHERE deal_ids IN (".implode(",", $arr_deal_ids_end).")";
+		
+		if($id){
+			$where .= " AND id>='".$id."'";
+		}
+		
+		$sql = "SELECT * FROM " . DB_PREFIX."deal_order ".$where.
+									" ORDER by id limit 2 ";
+		$list = $GLOBALS['db']->getAll($sql);
+		$list[0]['total_price'] = sprintf("%.2f", $list[0]['total_price']); 
+		
+		$items = $GLOBALS['db']->getAll("select * from " . DB_PREFIX."deal_order_item where order_id=".$list[0]['id']);
+		foreach($items as $key=>$value){
+			$items[$key]['unit_price'] = sprintf("%.2f", $items[$key]['unit_price']); 
+			$items[$key]['total_price'] = sprintf("%.2f", $items[$key]['total_price']);
+		}
+		
+		$list[0]['item'] = $items;
+		return $list;
 	}
 
 }

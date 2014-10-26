@@ -2,26 +2,238 @@
 <include file="Public:head" />
 <!-- 整个公共页头结束 -->
 
-	    <div class="mainindex" style="width:80%;position:relative;left:-100px;">
-	    	<link rel="stylesheet" type="text/css" href="__TMPL__Common/css/nec.css">
 
-	    	<table class="m-table">
-	    	    <thead>
-	    	        <tr><th class="">订单编号</th><th>总价</th><th class="cola">商品名</th><th class="colb">下单时间</th><th class="colb">订单状态</th></tr>
-	    	    </thead>
-	    	    <tbody>
-	    	        <volist name="order" id="vo">
-	    	        	<tr>
-	    	        		<td>{$vo.order_sn}</td>
-	    	        		<td>￥{$vo.total_price}</td>
-	    	        		<td>{$vo.good_name}</td>
-	    	        		<td>{$vo.create_time|date='Y-m-d H:i:s',###}</td>
-	    	        		<td>{$vo.order_status}</td>
-	    	        	</tr>
-	    	        </volist>
-	    	    </tbody>
-	    	</table>
+<script type="text/javascript">
+<!--
+$(function(){
+	loadGrid();
+	init();
+});
+
+function init(){
+	$('#close_btn').click(function(e){
+    	if ($(this).linkbutton("options").disabled) {
+            return;
+        }
+    	closeOrder(e);
+    });
+    $('#delivery_btn').click(function(e){
+    	if ($(this).linkbutton("options").disabled) {
+            return;
+        }
+    	deliveryGoods(e);
+    });
+}
+
+//加载数据列表
+function loadGrid() {
+    $('#dgData').datagrid({
+        url: '/index.php?m=Ordermanage&a=orders_list',
+        method: 'get',
+        fitColumns: true, 
+        remoteSort: false,  //列少设为true,列多设为false
+        pagination: true,
+        pageSize: 20,
+        pageList: [10, 20, 40, 60, 80, 100],
+        fit: true,
+        singleSelect: true,
+        sortName: 'id',
+        sortOrder: 'desc',
+        idField: 'id',
+        columns: [[
+			{ field: 'id', title: 'ID', hidden: true},
+	          { field: 'order_sn', title: '订单编号', width: 180, sortable: true, align: 'center' },
+	          { field: 'user_name', title: '下单客户', width: 100, sortable: true, align: 'center' },
+	          { field: 'total_price', title: '总金额', width: 100, sortable: true, align: 'center',
+	        	  sorter:function(a,b){
+					  return parseInt(a)>parseInt(b)?1:-1;
+				  },
+				  formatter:function(value,row,index){
+					  return '￥'+value;
+				  }
+	          },
+	          { field: 'create_time', title: '下单时间', width: 100, sortable: true, align: 'center' },
+	          { field: 'pay_status_val', title: '支付状态', width: 100, sortable: true, align: 'center' },
+	          { field: 'order_status_val', title: '订单状态', width: 100, sortable: true, align: 'center' }
+          ]],
+        toolbar: "#toolbar",
+        onBeforeLoad: function (param) {
+            $('#search_form').find('input').each(function (index) {
+                param[this.name] = $(this).val();
+            });
+            $('#search_form').find('select').each(function (index) {
+                param[this.name] = $(this).val();
+            });
+        }
+    });
+}
+
+
+
+//发货
+function deliveryGoods(e){
+  var rows =  $('#dgData').datagrid('getSelections'); 
+  if (rows.length == 0) { 
+      showError('请选择一条记录进行操作!'); 
+      return;
+  } 
+  
+  if (rows.length>1) 
+  { 
+      showError('只能选择一条记录进行操作!'); 
+      return;
+  } 
+  var order = rows[0];
+  //发货条件：用户已经全部支付，且订单状态为用户已下单
+	if(order.pay_status==2 && order.order_status==1){
+		
+		var order_sn=order.order_sn;
+	    $.messager.confirm('提示信息', '确认对订单“'+order_sn+'”进行发货操作？', function (isClickedOk) {
+	        if (isClickedOk) {
+	            $.ajax({
+	                url: '/index.php?m=Ordermanage&a=deliveryGoods',
+	                data: { "order_id": order.id },
+	                success: function (r) {
+	                     	if(r.status==1){
+	                     		showInfo(r.info);
+	                     		$('#dgData').datagrid('reload');
+	                     	}else {
+	                     		showError(r.info);
+	                     	}
+	                },
+				       complete:function(){
+				               	clearLoading();
+				               	$("#downOrder_btn").linkbutton('enable');
+			              }
+				     });
+					showLoading(e);
+					$("#downOrder_btn").linkbutton('disable');
+	        }
+	    });
+		
+	}else {
+		showError('发货条件：支付状态为已经全部支付，且订单状态为用户已下单!'); 
+      return;
+	}
+}
+
+function closeOrder(e){
+	var rows =  $('#dgData').datagrid('getSelections'); 
+  if (rows.length == 0) { 
+      showError('请选择一条记录进行操作!'); 
+      return;
+  } 
+  
+  if (rows.length>1) 
+  { 
+      showError('只能选择一条记录进行操作!'); 
+      return;
+  } 
+  var order = rows[0];
+  //发货条件：用户已经全部支付，且订单状态为用户已下单
+	if(order.order_status!=0){
+		var order_sn=order.order_sn;
+	    $.messager.confirm('提示信息', '确认要关闭订单“'+order_sn+'”？', function (isClickedOk) {
+	        if (isClickedOk) {
+	            $.ajax({
+	                url: '/index.php?m=Ordermanage&a=closeOrder',
+	                data: { "order_id": order.id },
+	                success: function (r) {
+	                     	if(r.status==1){
+	                     		showInfo(r.info);
+	                     		$('#dgData').datagrid('reload');
+	                     	}else {
+	                     		showError(r.info);
+	                     	}
+		                },
+			       complete:function(){
+			               	clearLoading();
+			               	$("#downOrder_btn").linkbutton('enable');
+		              }
+			     });
+				showLoading(e);
+				$("#downOrder_btn").linkbutton('disable');
+	        }
+	    });
+		
+	}else {
+		showError(order.order_sn+'已经是关闭状态!'); 
+      return;
+	}
+}
+
+
+//详情
+function detailOrder(){
+	var row = selectRow();
+	if(!row){
+		return;
+	}
+    window.location = "/index.php?m=Ordermanage&a=detailOrder&id="+row.id;
+}
+
+function searchOrder(){
+	$('#dgData').datagrid('reload');
+}
+
+function refreshOrder(){
+	$('#search_order_sn').val('');
+	$('#search_user_name').val('');
+	$('#search_start').datebox('setValue','');
+	$('#search_end').datebox('setValue','');
+	searchOrder();
+}
+
+//-->
+</script>
+	    
+	    <div class="mainindex" >
+	    	<div class="formbody">
+			    <div class="formtitle"><span>订单列表</span></div>
+			    <div class="easyui-panel" fit='true' >
+			    	<table id="dgData" style="height:520px;"></table>
+			    </div>
+		    </div>
 	    </div>
+	    
+	    
+	    	<div id="toolbar" style="padding:5px;height:auto">
+		     	 <div style="margin-bottom:5px">
+		            <a href="javascript:void(0)" id="delivery_btn" class="easyui-linkbutton" iconCls="icon-application_side_expand" >发货</a>
+		            <a href="javascript:void(0)" onclick="detailOrder();" class="easyui-linkbutton" iconCls="icon-application_view_detail" >详情</a>
+		            <a href="javascript:void(0)" id="close_btn" class="easyui-linkbutton" iconCls="icon-cancel" >关闭</a>
+		         </div>
+		    	 <div style="height:40px;margin-bottom:5px;" >
+		          <form id="search_form" method="post">
+		                <table width="100%" cellspacing="1" cellpadding="0" border="0" class="form_table">
+		                    <tr>
+		                    	
+		                        <td style="text-align: right; width:120px;">下单时间从：</td>
+		                        <td style="text-align: left; width:260px;">
+		                        	<input id="search_start" name="search_start" class="easyui-datebox" style="width:100px;"/>到
+		                        	<input id="search_end" name="search_end" class="easyui-datebox" style="width:100px;"/>
+		                        </td>
+		                        <td style="text-align: right; width:80px;">订单号：</td>
+		                        <td style="text-align: left; width:130px;">
+		                        	<input type="text" id="search_order_sn" name="search_order_sn" style="width:120px;">
+		                        </td>
+		                        <td style="text-align: right; width:80px;">下单客户：</td>
+		                        <td style="text-align: left; width:130px;">
+		                        	<input type="text" id="search_user_name" name="search_user_name" style="width:120px;">
+		                        </td>
+		                        
+		                        <td style="text-align: left; width:430px;">
+		                        	<a href="javascript:void(0)" onclick="searchOrder();" class="easyui-linkbutton" icon="icon-search">查找</a>
+		                        	<a href="javascript:void(0)" onclick="refreshOrder();" class="easyui-linkbutton" icon="icon-reload">刷新</a>
+		                        </td>
+		                        <td>&nbsp;</td>
+		                    </tr>
+		                </table>
+		           </form>
+		     	</div>
+		    </div>
+	    
+		    
 <!-- 整个公共页尾 -->
 <include file="Public:footer" />
 <!-- 整个公共页尾结束 -->
