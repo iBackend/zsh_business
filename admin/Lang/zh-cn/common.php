@@ -935,10 +935,12 @@ return array(
 	'PAYMENT_TYPE'	=>	'支付方式',
 	'PAYMENT_STATUS'	=>	'支付状态',
 	
-	'ORDER_STATUS_0'	=>	'订单已关闭',
+	'ORDER_STATUS_0'	=>	'商家已拒绝或者用户已取消',
 	'ORDER_STATUS_1'	=>	'用户已下单',
 	'ORDER_STATUS_2'	=>	'商家已发货',
 	'ORDER_STATUS_3'	=>	'用户确认收货',
+	'ORDER_STATUS_4'	=>	'用户拒签',
+	'ORDER_STATUS_5'	=>	'订单已关闭',
 	
 	//团购订单
 	'DEAL_ORDER'	=>	'订单列表',

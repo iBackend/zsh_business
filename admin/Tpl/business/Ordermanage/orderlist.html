@@ -23,6 +23,18 @@ function init(){
         }
     	deliveryGoods(e);
     });
+    $('#edit_btn').click(function(e){
+    	if ($(this).linkbutton("options").disabled) {
+            return;
+        }
+    	editOrder(e);
+    });
+    $('#reject_btn').click(function(e){
+    	if ($(this).linkbutton("options").disabled) {
+            return;
+        }
+    	rejectOrder(e);
+    });
 }
 
 //加载数据列表
@@ -117,6 +129,95 @@ function deliveryGoods(e){
 	}
 }
 
+
+//修改订单总价
+function editOrder(e){
+	var rows =  $('#dgData').datagrid('getSelections'); 
+	if (rows.length == 0) { 
+	    showError('请选择一条记录进行操作!'); 
+	    return;
+	} 
+	
+	if (rows.length>1) 
+	{ 
+	    showError('只能选择一条记录进行操作!'); 
+	    return;
+	} 
+	var order = rows[0];
+	
+	$.messager.prompt('修改订单总价', '订单总价:', function(r){
+		if (r){
+			$.ajax({
+                url: '/index.php?m=Ordermanage&a=editOrder',
+                data: { "order_id": order.id, "total_price": r  },
+                success: function (r) {
+                     	if(r.status==1){
+                     		showInfo(r.info);
+                     		$('#dgData').datagrid('reload');
+                     	}else {
+                     		showError(r.info);
+                     	}
+                },
+			       complete:function(){
+			               	clearLoading();
+			               	$("#edit_btn").linkbutton('enable');
+		              }
+			     });
+				showLoading(e);
+				$("#edit_btn").linkbutton('disable');
+        }
+    });
+}
+
+
+//拒绝订单
+function rejectOrder(e){
+	var rows =  $('#dgData').datagrid('getSelections'); 
+	if (rows.length == 0) { 
+	    showError('请选择一条记录进行操作!'); 
+	    return;
+	} 
+	
+	if (rows.length>1) 
+	{ 
+	    showError('只能选择一条记录进行操作!'); 
+	    return;
+	} 
+	var order = rows[0];
+	//发货条件：用户已经全部支付，且订单状态为用户已下单
+	if(order.order_status==1){
+		
+		var order_sn=order.order_sn;
+	    $.messager.confirm('提示信息', '确认对订单“'+order_sn+'”进行拒绝操作？', function (isClickedOk) {
+	        if (isClickedOk) {
+	            $.ajax({
+	                url: '/index.php?m=Ordermanage&a=rejectOrder',
+	                data: { "order_id": order.id },
+	                success: function (r) {
+	                     	if(r.status==1){
+	                     		showInfo(r.info);
+	                     		$('#dgData').datagrid('reload');
+	                     	}else {
+	                     		showError(r.info);
+	                     	}
+	                },
+				       complete:function(){
+				               	clearLoading();
+				               	$("#reject_btn").linkbutton('enable');
+			              }
+				     });
+					showLoading(e);
+					$("#reject_btn").linkbutton('disable');
+	        }
+	    });
+		
+	}else {
+		showError('拒绝订单条件：订单状态为用户已下单!'); 
+    	return;
+	}
+}
+
+
 function closeOrder(e){
 	var rows =  $('#dgData').datagrid('getSelections'); 
   if (rows.length == 0) { 
@@ -130,10 +231,9 @@ function closeOrder(e){
       return;
   } 
   var order = rows[0];
-  //发货条件：用户已经全部支付，且订单状态为用户已下单
-	if(order.order_status!=0){
+  if(order.order_status!=5){
 		var order_sn=order.order_sn;
-	    $.messager.confirm('提示信息', '确认要关闭订单“'+order_sn+'”？', function (isClickedOk) {
+	    $.messager.confirm('提示信息', '确认要关闭订单“'+order_sn+'”，关闭订单此订单将不能进行任何操作？', function (isClickedOk) {
 	        if (isClickedOk) {
 	            $.ajax({
 	                url: '/index.php?m=Ordermanage&a=closeOrder',
@@ -158,7 +258,7 @@ function closeOrder(e){
 		
 	}else {
 		showError(order.order_sn+'已经是关闭状态!'); 
-      return;
+      	return;
 	}
 }
 
@@ -201,6 +301,8 @@ function refreshOrder(){
 		     	 <div style="margin-bottom:5px">
 		            <a href="javascript:void(0)" id="delivery_btn" class="easyui-linkbutton" iconCls="icon-application_side_expand" >发货</a>
 		            <a href="javascript:void(0)" onclick="detailOrder();" class="easyui-linkbutton" iconCls="icon-application_view_detail" >详情</a>
+		            <a href="javascript:void(0)" id="edit_btn" class="easyui-linkbutton" iconCls="icon-edit" >修改</a>
+		            <a href="javascript:void(0)" id="reject_btn" class="easyui-linkbutton" iconCls="icon-page_red" >拒绝</a>
 		            <a href="javascript:void(0)" id="close_btn" class="easyui-linkbutton" iconCls="icon-cancel" >关闭</a>
 		         </div>
 		    	 <div style="height:40px;margin-bottom:5px;" >

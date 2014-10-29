@@ -2,23 +2,45 @@
 <include file="Public:head" />
 <!-- 整个公共页头结束 -->
 
- <div class="mainindex" style="width:80%;position:relative;left:-100px;">
- 	<link rel="stylesheet" type="text/css" href="__TMPL__Common/css/nec.css">
- 	
- 	<table class="m-table">
- 	    <tbody>
- 	        <tr>
- 	        	<td>是否为服务到家的商家</td>
- 	        	<td>
- 	        		<?php if ($route): ?>
-	    		<span style="color:blue">您是服务到家里的入驻商家</span>
-	    	<?php else: ?>
-	    		<span style="color:blue">您还不是是服务到家里的入驻商家</span>
-	    	<?php endif; ?>
- 	        	</td>
- 	        </tr>
- 	    </tbody>
- 	</table>
+ <div class="mainindex">
+ 
+ 	<div class="formbody">
+    			<form action="index.php?m=Sysconf&a=authsave" class="form-horizontal" role="form" method="post" enctype="multipart/form-data">
+			    <div class="formtitle"><span>认证信息</span></div>
+			    <input type="hidden" value="{$auth.id}" id="id" name="id"/>
+			    
+			    <ul class="forminfo">
+			    
+			    <?php if ($warn): ?>
+			    <li><div class="warn">{$warn}</div><i></i></li>
+			    <?php endif; ?>
+			    
+			    <li><label>身份证号</label><input name="id_card" value="{$auth.id_card}" type="text" class="dfinput" /><i></i></li>
+			    
+			    <li><label>身份证正反面</label>
+			    	<input name="card_img_head" type="file"/><input name="card_img_back" type="file"/>
+			    	<div>正面:<img style="max-width:150px;" src="{$auth.card_img_head}">反面:<img style="max-width:150px;" src="{$auth.card_img_back}"></div>
+			    </li>
+			    
+			    <li><label>营业执照</label>
+			    	<input name="business_license" type="file">
+					<div><img style="max-width:150px;" src="{$auth.business_license}"></div>
+			    <i></i></li>
+
+			    <li><label>认证状态</label>
+			    	<div class="warn">{$auth.verify_info}</div>
+			    <i></i></li>
+
+			    <li><label>申请入驻到家</label>
+			    	<input type="checkbox" value="1" name="apply_route" <?php echo $auth['apply_route']>0?"checked='checked'":"" ?> /><i></i></li>
+			    <li>
+			    
+			    <input type="submit" class="btn" value="提交认证"/>
+			    <input type="reset" class="btn btn-danger" value="进行重 置">
+			    </li>
+			    </ul>
+			    </form>
+		</div>
  </div>
 
 <!-- 整个公共页尾 -->

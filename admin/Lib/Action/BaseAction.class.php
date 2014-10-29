@@ -38,7 +38,7 @@ class BaseAction extends Action{
 		}
 
 		// 主菜单列表
-		$main_menu = M('Menu')->where("`pid` = 0 and `tip` = 'business'")->select();
+		$main_menu = M('Menu')->where("`pid` = 0 and `tip` = 'business'")->order("sort")->select();
 		//当前显示的菜单
 		$current_menu = array();
 		// 从菜单列表

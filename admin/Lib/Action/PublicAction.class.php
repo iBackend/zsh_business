@@ -62,15 +62,20 @@ class PublicAction extends BaseAction{
 				save_log($adm_name.L("ADM_PASSWORD_ERROR"),0); //记录密码登录错误的LOG
 				$this->error(L("ADM_PASSWORD_ERROR"),$ajax);
 			}
-			else
+			else if($adm_data['role_id']!=6)
+			{
+				$this->error("您登录的角色不属于店铺系统，请检查您登录的系统是否正确！",$ajax);
+			}
+			else 
 			{
 				//登录成功
 				$adm_session['adm_name'] = $adm_data['adm_name'];
 				$adm_session['adm_id'] = $adm_data['id'];
 				
-				
 				es_session::set(md5(conf("AUTH_KEY")),$adm_session);
-				es_session::set('bid',$adm_data['id']);
+				es_session::set('bid',$adm_data['id']);//商户就是admin
+				es_session::set('role',$adm_data['role_id']);//role_id=6 是商户老板， role_id=7 是店铺老板
+				es_session::set('location_id',$GLOBALS['db']->getOne("select location_id from zsh_supplier_account_location_link where account_id=".$adm_data['id']));//店铺
 				
 				//重新保存记录
 				$adm_data['login_ip'] = get_client_ip();

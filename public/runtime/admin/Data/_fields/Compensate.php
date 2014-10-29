@@ -9,6 +9,7 @@ return array (
   6 => 'total_price',
   7 => 'desc',
   8 => 'status',
+  9 => 'create_time',
   '_autoinc' => true,
   '_pk' => 'id',
 );

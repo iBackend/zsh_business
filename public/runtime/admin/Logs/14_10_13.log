@@ -1,2 +1,0 @@
-[ 2014-10-13T20:57:48+08:00 ] ERR: (ThinkException) 非法操作addcategory
-[ 2014-10-13T21:03:24+08:00 ] ERR: (ThinkException) 模板不存在[./admin/Tpl/business2/Goodmanage/addcategory.html]

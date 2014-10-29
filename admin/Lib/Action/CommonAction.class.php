@@ -11,9 +11,12 @@ class CommonAction extends AuthAction{
 	
 	// 全局获取商家id
 	public $bid = '';
+	// 全局获取店铺id
+	public $location_id = '';
 	function _initialize()
 	{
 		$this->bid = es_session::get('bid');
+		$this->location_id = es_session::get('location_id');
 	}
 
 	public function index() {		
@@ -155,9 +158,10 @@ class CommonAction extends AuthAction{
 	    
 		$upload = new UploadFile();
         //设置上传文件大小
-        $upload->maxSize  = conf('MAX_IMAGE_SIZE') ;  /* 配置于config */
+//         $upload->maxSize  = conf('MAX_IMAGE_SIZE') ;  /* 配置于config */
+        $upload->maxSize = 3000000;
+        
         //设置上传文件类型
-		
         $upload->allowExts  =  explode(',',conf('ALLOW_IMAGE_EXT')); /* 配置于config */        
        
         $dir_name = to_date(get_gmtime(),"Ym");
@@ -177,8 +181,6 @@ class CommonAction extends AuthAction{
 	             @mkdir(APP_ROOT_PATH."public/attachment/".$dir_name);
 	             @chmod(APP_ROOT_PATH."public/attachment/".$dir_name, 0777);
 	        }
-        
-        
         
        	$save_rec_Path = "/public/attachment/".$dir_name."/origin/";  //上传时先存放原图          	      
         $savePath = APP_ROOT_PATH."public/attachment/".$dir_name."/origin/"; //绝对路径

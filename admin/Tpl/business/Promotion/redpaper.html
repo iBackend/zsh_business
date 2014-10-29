@@ -1,0 +1,211 @@
+<!-- 整个公共页头 -->
+<include file="Public:head" />
+<!-- 整个公共页头结束 -->
+
+
+<script type="text/javascript">
+<!--
+$(function(){
+	loadGrid();
+	init();
+});
+
+function init(){
+	$('#close_btn').click(function(e){
+    	if ($(this).linkbutton("options").disabled) {
+            return;
+        }
+    	closeRedpaper(e);
+    });
+    $('#delivery_btn').click(function(e){
+    	if ($(this).linkbutton("options").disabled) {
+            return;
+        }
+    	deliveryGoods(e);
+    });
+    $('#edit_btn').click(function(e){
+    	if ($(this).linkbutton("options").disabled) {
+            return;
+        }
+    	editRedpaper(e);
+    });
+    $('#reject_btn').click(function(e){
+    	if ($(this).linkbutton("options").disabled) {
+            return;
+        }
+    	rejectRedpaper(e);
+    });
+}
+
+//加载数据列表
+function loadGrid() {
+    $('#dgData').datagrid({
+        url: 'index.php?m=Promotion&a=redpaper_list',
+        method: 'get',
+        fitColumns: true, 
+        remoteSort: false,  //列少设为true,列多设为false
+        pagination: true,
+        pageSize: 20,
+        pageList: [10, 20, 40, 60, 80, 100],
+        fit: true,
+        singleSelect: true,
+        sortName: 'id',
+        sortRedpaper: 'desc',
+        idField: 'id',
+        columns: [[
+			  { field: 'id', title: 'ID', title: '活动编号', width: 180, sortable: true, align: 'center' },
+	          { field: 'name', title: '红包名称', width: 100, sortable: true, align: 'center' },
+	          { field: 'genus', title: '优惠方式', width: 100, sortable: true, align: 'center',
+	        	  formatter:function(value,row,index){
+					  return value==1?"优惠券":"折扣券";
+				  }
+	          },
+	          { field: 'use_limit', title: '发放总数', width: 100, sortable: true, align: 'center',
+	        	  sorter:function(a,b){
+					  return parseInt(a)>parseInt(b)?1:-1;
+				  }  
+	          },
+	          { field: 'use_count', title: '已使用数量', width: 100, sortable: true, align: 'center',
+	        	  sorter:function(a,b){
+					  return parseInt(a)>parseInt(b)?1:-1;
+				  }  
+	          },
+	          { field: 'status', title: '当前状态', width: 100, sortable: true, align: 'center',
+	        	  formatter:function(value,row,index){
+					  return value==0?"不可用":"可用";
+				  }
+	          },
+	          { field: 'create_time', title: '创建时间', width: 100, sortable: true, align: 'center' }
+          ]],
+        toolbar: "#toolbar",
+        onBeforeLoad: function (param) {
+            $('#search_form').find('input').each(function (index) {
+                param[this.name] = $(this).val();
+            });
+            $('#search_form').find('select').each(function (index) {
+                param[this.name] = $(this).val();
+            });
+        }
+    });
+}
+
+
+
+function closeRedpaper(e){
+	var rows =  $('#dgData').datagrid('getSelections'); 
+  if (rows.length == 0) { 
+      showError('请选择一条记录进行操作!'); 
+      return;
+  } 
+  
+  if (rows.length>1) 
+  { 
+      showError('只能选择一条记录进行操作!'); 
+      return;
+  } 
+  var order = rows[0];
+  if(order.order_status!=5){
+		var order_sn=order.order_sn;
+	    $.messager.confirm('提示信息', '确认要关闭订单“'+order_sn+'”，关闭订单此订单将不能进行任何操作？', function (isClickedOk) {
+	        if (isClickedOk) {
+	            $.ajax({
+	                url: '/index.php?m=Redpapermanage&a=closeRedpaper',
+	                data: { "order_id": order.id },
+	                success: function (r) {
+	                     	if(r.status==1){
+	                     		showInfo(r.info);
+	                     		$('#dgData').datagrid('reload');
+	                     	}else {
+	                     		showError(r.info);
+	                     	}
+		                },
+			       complete:function(){
+			               	clearLoading();
+			               	$("#downRedpaper_btn").linkbutton('enable');
+		              }
+			     });
+				showLoading(e);
+				$("#downRedpaper_btn").linkbutton('disable');
+	        }
+	    });
+		
+	}else {
+		showError(order.order_sn+'已经是关闭状态!'); 
+      	return;
+	}
+}
+
+
+function editredpaper(){
+	var row = selectRow();
+	if(!row){
+		return;
+	}
+    window.location = "index.php?m=Promotion&a=createpaper&id="+row.id;
+}
+
+//新增
+function addredpaper() {
+	window.location = "index.php?m=Promotion&a=createpaper";
+}
+
+function searchRedpaper(){
+	$('#dgData').datagrid('reload');
+}
+
+function refreshRedpaper(){
+	$('#search_name').val('');
+	$('#search_start').datebox('setValue','');
+	$('#search_end').datebox('setValue','');
+	searchRedpaper();
+}
+
+//-->
+</script>
+	    
+	    <div class="mainindex" >
+	    	<div class="formbody">
+			    <div class="formtitle"><span>红包列表</span></div>
+			    <div class="easyui-panel" fit='true' >
+			    	<table id="dgData" style="height:520px;"></table>
+			    </div>
+		    </div>
+	    </div>
+	    
+	    
+	    	<div id="toolbar" style="padding:5px;height:auto">
+		     	 <div style="margin-bottom:5px">
+		     	 	<a href="javascript:void(0)" onclick="addredpaper();" class="easyui-linkbutton" iconCls="icon-add" >添加</a>
+		            <a href="javascript:void(0)" onclick="editredpaper();"  class="easyui-linkbutton" iconCls="icon-edit" >修改</a>
+		            <a href="javascript:void(0)" id="delete_btn" class="easyui-linkbutton" iconCls="icon-remove" >删除</a>
+		            <a href="javascript:void(0)" id="delivery_btn" class="easyui-linkbutton" iconCls="icon-page_red" >发放</a>
+		         </div>
+		    	 <div style="height:40px;margin-bottom:5px;" >
+		          <form id="search_form" method="post">
+		                <table width="100%" cellspacing="1" cellpadding="0" border="0" class="form_table">
+		                    <tr>
+		                    	
+		                        <td style="text-align: right; width:120px;">活动时间从：</td>
+		                        <td style="text-align: left; width:260px;">
+		                        	<input id="search_start" name="search_start" class="easyui-datebox" style="width:100px;"/>到
+		                        	<input id="search_end" name="search_end" class="easyui-datebox" style="width:100px;"/>
+		                        </td>
+		                        <td style="text-align: right; width:80px;">红包名称：</td>
+		                        <td style="text-align: left; width:130px;">
+		                        	<input type="text" id="search_name" name="search_name" style="width:120px;">
+		                        </td>
+		                        <td style="text-align: left; width:430px;">
+		                        	<a href="javascript:void(0)" onclick="searchRedpaper();" class="easyui-linkbutton" icon="icon-search">查找</a>
+		                        	<a href="javascript:void(0)" onclick="refreshRedpaper();" class="easyui-linkbutton" icon="icon-reload">刷新</a>
+		                        </td>
+		                        <td>&nbsp;</td>
+		                    </tr>
+		                </table>
+		           </form>
+		     	</div>
+		    </div>
+	    
+		    
+<!-- 整个公共页尾 -->
+<include file="Public:footer" />
+<!-- 整个公共页尾结束 -->

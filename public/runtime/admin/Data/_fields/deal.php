@@ -84,6 +84,8 @@ return array (
   81 => 'expire_refund',
   82 => 'any_refund',
   83 => 'multi_attr',
+  84 => 'freight',
+  85 => 'free_freight',
   '_autoinc' => true,
   '_pk' => 'id',
 );

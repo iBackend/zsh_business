@@ -34,14 +34,29 @@ class OrdermanageAction extends CommonAction
 	{
 		$sql = "update ". DB_PREFIX."deal_order set order_status=2 where id=".$_REQUEST['order_id'];
 		$GLOBALS['db']->query($sql);
-		
 		$this->success("发货成功！",true);
 	}
+	
+	//拒绝
+	public function rejectOrder()
+	{
+		$sql = "update ". DB_PREFIX."deal_order set order_status=0 where id=".$_REQUEST['order_id'];
+		$GLOBALS['db']->query($sql);
+		$this->success("拒绝成功！",true);
+	}
 
+	//修改
+	public function editOrder()
+	{
+		$sql = "update ". DB_PREFIX."deal_order set total_price='".$_REQUEST['total_price']."' where id=".$_REQUEST['order_id'];
+		$GLOBALS['db']->query($sql);
+		$this->success("修改成功！",true);
+	}
+	
 	//关闭订单
 	public function closeOrder()
 	{
-		$sql = "update ". DB_PREFIX."deal_order set order_status=0 where id=".$_REQUEST['order_id'];
+		$sql = "update ". DB_PREFIX."deal_order set order_status=5 where id=".$_REQUEST['order_id'];
 		$GLOBALS['db']->query($sql);
 		$this->success("关闭订单成功！",true);
 	}
