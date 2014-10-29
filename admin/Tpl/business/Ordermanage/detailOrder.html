@@ -1,0 +1,44 @@
+<!-- 整个公共页头 -->
+<include file="Public:head" />
+<!-- 整个公共页头结束 -->
+
+	    <div class="mainindex" style="width:80%;position:relative;left:-100px;">
+	    	<link rel="stylesheet" type="text/css" href="__TMPL__Common/css/nec.css" />
+
+			<div class="formbody">
+    			<input type="hidden" value="{$order.id}" id="id"/>
+			    <div class="formtitle"><span>订单详情</span></div>
+			    
+			    <div>
+			    	<label>订单编号：{$order.order_sn}</label>
+			    	<label>下单时间：{$order.create_time|date='Y-m-d H:i:s',###}</label>
+			    	<label>下单客户：{$order.user_name}</label>
+			    	<label>总额：￥{$order.total_price}</label>
+			    </div>
+			    
+			    
+	    	<table class="m-table">
+	    	    <thead>
+	    	        <tr><th class="">商品名称</th><th>单价</th><th class="cola">数目</th><th class="colb">小计</th></tr>
+	    	    </thead>
+	    	    <tbody>
+	    	        <volist name="order_item" id="vo">
+	    	        	<tr>
+	    	        		<td>{$vo.name}</td>
+	    	        		<td>￥{$vo.unit_price}</td>
+	    	        		<td>{$vo.number}</td>
+	    	        		<td>￥{$vo.total_price}</td>
+	    	        	</tr>
+	    	        </volist>
+	    	    </tbody>
+	    	</table>
+	    	
+	    	<div>
+	    		<label>&nbsp;</label><input name="" type="button" class="btn" onclick="window.location='/index.php?m=Ordermanage&a=orderlist';" value="返回订单列表"/>
+	    	</div>
+	    	
+	    	</div>
+	    </div>
+<!-- 整个公共页尾 -->
+<include file="Public:footer" />
+<!-- 整个公共页尾结束 -->

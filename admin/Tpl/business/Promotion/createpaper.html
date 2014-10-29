@@ -1,0 +1,48 @@
+<!-- 整个公共页头 -->
+<include file="Public:head" />
+<!-- 整个公共页头结束 -->
+				
+	    
+	    <div class="mainindex">
+	    	<form action="" class="form-horizontal" enctype="multipart/form-data" role="form" method="post" >
+	    	<div class="formbody">
+    			<input type="hidden" value="{$redpaper.id}" id="id"/>
+			    <div class="formtitle"><span>红包信息</span></div>
+			    
+			    <ul class="forminfo">
+			    <li><label>红包名称</label><input name="name" placeholder="" value="{$redpaper.name}"  type="text" maxlength="128" class="dfinput" /><i>标题不能超过128个字符</i></li>
+			    <li><label>发放总数</label><input name="use_limit" value="{$redpaper.use_limit}" placeholder="请输入数字" type="text" class="dfinput" /><i></i></li>
+
+				<li><label>开始时间</label><input name="begin_time" value="{$redpaper.begin_time}" placeholder="请输入日期格式：yyyy-mm-dd" type="text" class="dfinput" /><i></i></li>
+				<li><label>结束时间</label><input name="end_time" value="{$redpaper.end_time}" placeholder="请输入日期格式：yyyy-mm-dd" type="text" class="dfinput" /><i></i></li>
+				
+			    <li><label>优惠方式</label>
+			    	<select class="form-control dfinput" name="genus">
+			    		  	<option value="1" <?php echo ($redpaper[genus]==1)?'selected=selected':'' ?> >优惠券</option>
+			    		  	<option value="2" <?php echo ($redpaper[genus]==2)?'selected=selected':'' ?> >折扣券</option>
+					</select>
+			    </li>
+				
+				<li><label>优惠额度</label><input name="point" type="text" placeholder="请输入数字" class="dfinput" value="{$redpaper.point}"/><i></i></li>
+				
+			    <li><label>活动配图</label>
+			    	<input name="img" type="file">
+					<div><img style="max-width:150px;" src="{$redpaper.img}"></div>
+			    <i></i></li>
+
+			    <li><label>活动描述</label><textarea name="remark" cols="" rows="" class="textinput">{$redpaper.remark}</textarea></li>
+			   
+			    <li>
+			    	<label>&nbsp;</label><input name="" type="submit" class="btn" value="保存"/>
+			    	<label>&nbsp;</label><input name="" type="button" class="btn" onclick="window.location='index.php?m=Promotion&a=redpaper';" value="返回红包列表"/>
+			    </li>
+			    </ul>
+			    
+			    
+			    </div>
+			</form>
+	    </div>
+
+<!-- 整个公共页尾 -->
+<include file="Public:footer" />
+<!-- 整个公共页尾结束 -->

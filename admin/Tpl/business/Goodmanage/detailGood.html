@@ -1,0 +1,116 @@
+<!-- 整个公共页头 -->
+<include file="Public:head" />
+<!-- 整个公共页头结束 -->
+				
+	    
+	    <div class="mainindex">
+	    	<form class="form-horizontal" enctype="multipart/form-data" role="form" method="post" >
+	    	<div class="formbody">
+    			<input type="hidden" value="{$goods.id}" id="id"/>
+			    <div class="formtitle"><span>商品基本信息</span></div>
+			    
+			    <ul class="forminfo">
+			    <li><label>商品名称</label><input name="name" placeholder="" value="{$goods.name}"  type="text" class="dfinput" /><i>标题不能超过30个字符</i></li>
+
+			    <li><label>简短名</label><input name="sub_name" value="{$goods.sub_name}" placeholder="请输入简短名" type="text" class="dfinput" /><i></i></li>
+
+			    <li><label>分类</label>
+			    	<select class="form-control dfinput" name="shop_cate_id">
+					  <?php foreach ($cate_list as $key => $value): ?>
+						  	<option value="{$value.id}" <?php echo ($goods[shop_cate_id]==$value[id])?'selected=selected':'' ?> >{$value.name}</option>
+					 <?php endforeach; ?>
+					</select>
+			    </li>
+
+			    <li><label>商品图片</label><i><img src="{$goods.img}" /></i></li>
+
+			    <li><label>详细描述</label><textarea name="description" cols="" rows="" class="textinput">{$goods.description}</textarea></li>
+
+			    <li><label>价格</label><input name="current_price" type="text" class="dfinput" value="{$goods.current_price}"/><i>元</i></li>
+			    <li><label>库存</label><input name="max_bought" type="text" class="dfinput" value="{$goods.max_bought}"/><i>件</i></li>
+			    <li><label>发布城市</label>
+			    	<select class="form-control dfinput" name="city_id">
+					  <?php foreach ($citys as $key => $value): ?>
+					  	<option value="{$value.id}" <?php echo ($goods[city_id]==$value[id])?'selected=selected':'' ?> >{$value.name}</option>
+					  <?php endforeach; ?>
+					</select>
+			    </li>
+
+			    <li><label>用于手机展示</label><textarea name="brief" cols="" rows="" class="textinput">{$goods.brief}</textarea></li>
+
+			    <!-- <li><label>商品标示图</label><input name="icon" placeholder="" type="file" class="dfinput" /><i></i></li> -->
+
+			    <li><label>代金券金额</label><input name="balance_price" type="text" class="dfinput" value="{$goods.balance_price}"/><i>元</i></li>
+			   
+			    <li>
+			    	<?php if ($next_goods): ?>
+			    	<label>&nbsp;</label><input name="" type="button" class="btn" onclick="window.location='/index.php?m=Goodmanage&a=detailGood&id={$next_goods.id}';" value="下一个商品"/>
+			    	<?php endif; ?>
+			    	<label>&nbsp;</label><input name="" type="button" class="btn" onclick="window.location='/index.php?m=Goodmanage&a=goodlist';" value="返回商品列表"/>
+			    </li>
+			    </ul>
+			    
+			    
+			    </div>
+			</form>
+	    </div>
+</div>
+<script type="text/javascript">
+	$(document).ready(function() {
+		function toDecimal(x) {   
+            var f = parseFloat(x);              
+
+if (isNaN(f)) {   
+                return;              
+
+}              
+
+f = Math.round(x*100)/100;              
+
+return f;          
+
+}       
+        //制保留2位小数，如：2，会在2后面补上00.即2.00          
+
+function toDecimal2(x) {              
+
+var f = parseFloat(x);              
+
+if (isNaN(f)) {   
+                return false;              
+
+}              
+
+var f = Math.round(x*100)/100;              
+
+var s = f.toString();              
+
+var rs = s.indexOf('.');              
+
+if (rs < 0) {   
+                rs = s.length;                  
+
+　　　　　　s += '.';   
+            }              
+
+while (s.length <= rs + 2) {   
+                s += '0';              
+
+}              
+
+return s;   
+}                     
+
+function fomatFloat(src,pos){      
+return Math.round(src*Math.pow(10, pos))/Math.pow(10, pos);
+}
+$('input[name=current_price]').blur(function(event) {
+			var str = $(this).val();
+			$(this).val(toDecimal2(str));
+		});
+	});
+</script>
+
+<!-- 整个公共页尾 -->
+<include file="Public:footer" />
+<!-- 整个公共页尾结束 -->
