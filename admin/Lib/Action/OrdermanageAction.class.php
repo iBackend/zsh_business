@@ -33,8 +33,12 @@ class OrdermanageAction extends CommonAction
 	public function deliveryGoods()
 	{
 		$sql = "update ". DB_PREFIX."deal_order set order_status=2 where id=".$_REQUEST['order_id'];
-		$GLOBALS['db']->query($sql);
-		$this->success("发货成功！",true);
+		if($GLOBALS['db']->query($sql)){
+			$this->orderLog("商家已发货", $_REQUEST['order_id']);
+			$this->success("发货成功！",true);
+		}else {
+			$this->error("发货失败！",true);
+		}
 	}
 	
 	//拒绝
@@ -42,6 +46,7 @@ class OrdermanageAction extends CommonAction
 	{
 		$sql = "update ". DB_PREFIX."deal_order set order_status=0 where id=".$_REQUEST['order_id'];
 		$GLOBALS['db']->query($sql);
+		$this->orderLog("商家已拒绝", $_REQUEST['order_id']);
 		$this->success("拒绝成功！",true);
 	}
 
@@ -49,7 +54,8 @@ class OrdermanageAction extends CommonAction
 	public function editOrder()
 	{
 		$sql = "update ". DB_PREFIX."deal_order set total_price='".$_REQUEST['total_price']."' where id=".$_REQUEST['order_id'];
-		$GLOBALS['db']->query($sql);
+		$GLOBALS['db']->query($sql);	
+		$this->orderLog("商家修改订单总价为".$_REQUEST['total_price'], $_REQUEST['order_id']);
 		$this->success("修改成功！",true);
 	}
 	
@@ -58,6 +64,7 @@ class OrdermanageAction extends CommonAction
 	{
 		$sql = "update ". DB_PREFIX."deal_order set order_status=5 where id=".$_REQUEST['order_id'];
 		$GLOBALS['db']->query($sql);
+		$this->orderLog("商家已关闭", $_REQUEST['order_id']);
 		$this->success("关闭订单成功！",true);
 	}
 	
@@ -280,6 +287,12 @@ class OrdermanageAction extends CommonAction
 		
 		$list[0]['item'] = $items;
 		return $list;
+	}
+	
+	private function orderLog($info, $order_id){
+		$row = $GLOBALS['db']->getRow("select * from ". DB_PREFIX."deal_order where id=".$order_id);
+		$sql = "insert into ".DB_PREFIX."deal_order_log (log_info, log_time, order_id) values ('".$row["order_sn"].$info."', '".time()."', '".$order_id."')";
+		return $GLOBALS['db']->query($sql);
 	}
 
 }

@@ -100,11 +100,26 @@ class GoodmanageAction extends CommonAction
 
 		if ($_POST) {
 			// 处理图片
-			$arr_img = $this->uploadImage();
-			foreach ($arr_img['data'] as $key => $value) {
-				$_POST[$value['key']] = 'http://'.$_SERVER['HTTP_HOST'].$value['recpath'].$value['savename'];
+			$file_upload_flag = false;
+			foreach($_FILES as $f){
+				if($f['size']>0){
+					$file_upload_flag = true;
+					break;
+				}
 			}
-			$_POST['icon'] = 'http://'.$_SERVER['HTTP_HOST'].$arr_img['data'][0]['recpath'].$arr_img['data'][0]['savename'];
+			
+			if($file_upload_flag){
+				$arr_img = $this->uploadImage();
+				if($arr_img['status']==0)
+				{
+					$this->error($arr_img['info']);
+				}
+				foreach ($arr_img['data'] as $key => $value) {
+					$_POST[$value['key']] = 'http://'.$_SERVER['HTTP_HOST'].$value['recpath'].$value['savename'];
+				}
+				$_POST['icon'] = 'http://'.$_SERVER['HTTP_HOST'].$arr_img['data'][0]['recpath'].$arr_img['data'][0]['savename'];
+			}
+			
 			// 商家商品关联
 			$supplier_id = D('supplier_account_location_link')->where("`account_id` = {$bid}")->getField('location_id');
 			$deal_model = D('Deal');

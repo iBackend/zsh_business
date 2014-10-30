@@ -158,8 +158,8 @@ class CommonAction extends AuthAction{
 	    
 		$upload = new UploadFile();
         //设置上传文件大小
-//         $upload->maxSize  = conf('MAX_IMAGE_SIZE') ;  /* 配置于config */
-        $upload->maxSize = 3000000;
+        $upload->maxSize  = conf('MAX_IMAGE_SIZE') ;  /* 配置于config */
+//         $upload->maxSize = 3000000;
         
         //设置上传文件类型
         $upload->allowExts  =  explode(',',conf('ALLOW_IMAGE_EXT')); /* 配置于config */        

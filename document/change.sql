@@ -26,6 +26,8 @@ ALTER TABLE `zsh`.`zsh_redpaper` MODIFY COLUMN `point` DECIMAL(20,2) NOT NULL DE
 ALTER TABLE `zsh`.`zsh_redpaper` MODIFY COLUMN `begin_time` INT(10) UNSIGNED NOT NULL COMMENT '开始时间',
  ADD COLUMN `create_time` INT(10) UNSIGNED NOT NULL AFTER `remark`;
 alter table zsh_redpaper add column img varchar(225)  after point;
+ALTER TABLE `zsh`.`zsh_redpaper` MODIFY COLUMN `status` TINYINT(2) NOT NULL DEFAULT 0 COMMENT '状态';
+
 
 DROP TABLE IF EXISTS `zsh`.`zsh_supplier_location_auth`;
 CREATE TABLE  `zsh`.`zsh_supplier_location_auth` (

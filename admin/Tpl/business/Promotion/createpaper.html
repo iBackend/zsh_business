@@ -1,12 +1,17 @@
 <!-- 整个公共页头 -->
 <include file="Public:head" />
 <!-- 整个公共页头结束 -->
-				
-	    
+<script src="__TMPL__Common/editor/kindeditor.js" type="text/javascript"></script>
+<script type="text/javascript">
+KE.show({
+    id : 'remark' //TEXTAREA输入框的ID
+});
+</script>
+
 	    <div class="mainindex">
-	    	<form action="" class="form-horizontal" enctype="multipart/form-data" role="form" method="post" >
+	    	<form action="index.php?m=Promotion&a=redpaperSave" class="form-horizontal" enctype="multipart/form-data" role="form" method="post" >
 	    	<div class="formbody">
-    			<input type="hidden" value="{$redpaper.id}" id="id"/>
+    			<input type="hidden" value="{$redpaper.id}" id="id" name="id"/>
 			    <div class="formtitle"><span>红包信息</span></div>
 			    
 			    <ul class="forminfo">
@@ -30,7 +35,7 @@
 					<div><img style="max-width:150px;" src="{$redpaper.img}"></div>
 			    <i></i></li>
 
-			    <li><label>活动描述</label><textarea name="remark" cols="" rows="" class="textinput">{$redpaper.remark}</textarea></li>
+			    <li><label>活动描述</label><textarea name="remark" id="remark" cols="" rows="" class="textinput">{$redpaper.remark}</textarea></li>
 			   
 			    <li>
 			    	<label>&nbsp;</label><input name="" type="submit" class="btn" value="保存"/>

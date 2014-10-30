@@ -193,7 +193,7 @@ function refreshRedpaper(){
 	    
 	    <div class="mainindex" >
 	    	<div class="formbody">
-			    <div class="formtitle"><span>红包列表</span></div>
+			    <div class="formtitle"><span>红包用户统计</span></div>
 			    <div class="easyui-panel" fit='true' >
 			    	<table id="dgData" style="height:520px;"></table>
 			    </div>
@@ -203,17 +203,14 @@ function refreshRedpaper(){
 	    
 	    	<div id="toolbar" style="padding:5px;height:auto">
 		     	 <div style="margin-bottom:5px">
-		     	 	<a href="javascript:void(0)" onclick="addredpaper();" class="easyui-linkbutton" iconCls="icon-add" >添加</a>
-		            <a href="javascript:void(0)" onclick="editredpaper();"  class="easyui-linkbutton" iconCls="icon-edit" >修改</a>
-		            <a href="javascript:void(0)" id="delete_btn" class="easyui-linkbutton" iconCls="icon-remove" >删除</a>
-		            <a href="javascript:void(0)" id="delivery_btn" class="easyui-linkbutton" iconCls="icon-page_red" >发放</a>
+		     	 	<a href="javascript:void(0)" onclick="checkRedpaper();" class="easyui-linkbutton" iconCls="icon-application_side_expand" >核对</a>
 		         </div>
 		    	 <div style="height:40px;margin-bottom:5px;" >
 		          <form id="search_form" method="post">
 		                <table width="100%" cellspacing="1" cellpadding="0" border="0" class="form_table">
 		                    <tr>
 		                    	
-		                        <td style="text-align: right; width:120px;">活动时间从：</td>
+		                        <td style="text-align: right; width:120px;">红包名称</td>
 		                        <td style="text-align: left; width:260px;">
 		                        	<input id="search_start" name="search_start" class="easyui-datebox" style="width:100px;"/>到
 		                        	<input id="search_end" name="search_end" class="easyui-datebox" style="width:100px;"/>
