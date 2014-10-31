@@ -2,19 +2,124 @@
 <include file="Public:head" />
 <!-- 整个公共页头结束 -->
 
-	    <div class="mainindex">
-	       当前页面正在开发中...
-	    <div class="xline"></div>
-	    <ul class="iconlist">
-		    <li><img src="__TMPL__Common/images/ico01.png" /><p><a href="#">管理设置</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico02.png" /><p><a href="#">发布文章</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico03.png" /><p><a href="#">数据统计</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico04.png" /><p><a href="#">文件上传</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico05.png" /><p><a href="#">目录管理</a></p></li>
-		    <li><img src="__TMPL__Common/images/ico06.png" /><p><a href="#">查询</a></p></li> 
-	    </ul>
-	    </div>
 
+<script type="text/javascript">
+<!--
+$(function(){
+	loadGrid();
+});
+
+
+//加载数据列表
+function loadGrid() {
+    $('#dgData').datagrid({
+        url: 'index.php?m=Integritygold&a=record_list',
+        method: 'get',
+        fitColumns: true, 
+        remoteSort: false,  //列少设为true,列多设为false
+        pagination: true,
+        pageSize: 20,
+        pageList: [10, 20, 40, 60, 80, 100],
+        fit: true,
+        singleSelect: true,
+        sortName: 'id',
+        sortLog: 'desc',
+        idField: 'id',
+        columns: [[
+			{ field: 'id', title: 'ID', hidden: true},
+	          { field: 'compen_id', title: '保证金编号', width: 180, sortable: true, align: 'center' },
+	          { field: 'genus', title: '资金方式', width: 100, sortable: true, align: 'center',
+	        	  formatter:function(value,row,index){
+					  return parseInt(value)==1?"保证金充值":"保证金赔付";
+				  }
+	          },
+	          { field: 'remarks', title: '操作记录', width: 300, sortable: true, align: 'center' },
+	          { field: 'total_price', title: '操作金额', width: 100, sortable: true, align: 'center',
+	        	  sorter:function(a,b){
+					  return parseInt(a)>parseInt(b)?1:-1;
+				  },
+				  formatter:function(value,row,index){
+					  return '￥'+value;
+				  }
+	          },
+	          { field: 'create_time', title: '操作时间', width: 100, sortable: true, align: 'center' }
+          ]],
+        toolbar: "#toolbar",
+        onBeforeLoad: function (param) {
+            $('#search_form').find('input').each(function (index) {
+                param[this.name] = $(this).val();
+            });
+            $('#search_form').find('select').each(function (index) {
+                param[this.name] = $(this).val();
+            });
+        }
+    });
+}
+
+
+
+
+function searchLog(){
+	$('#dgData').datagrid('reload');
+}
+
+function refreshLog(){
+	$('#search_genus').val('');
+	$('#search_keyword').val('');
+	$('#search_start').datebox('setValue','');
+	$('#search_end').datebox('setValue','');
+	searchLog();
+}
+
+//-->
+</script>
+	    
+	    <div class="mainindex" >
+	    	<div class="formbody">
+			    <div class="formtitle"><span>系统记录</span></div>
+			    <div class="easyui-panel" fit='true' >
+			    	<table id="dgData" style="height:520px;"></table>
+			    </div>
+		    </div>
+	    </div>
+	    
+	    
+	    	<div id="toolbar" style="padding:5px;height:auto">
+		    	 <div style="height:40px;margin-bottom:5px;" >
+		          <form id="search_form" method="post">
+		                <table width="100%" cellspacing="1" cellpadding="0" border="0" class="form_table">
+		                    <tr>
+		                    	
+		                        <td style="text-align: right; width:120px;">时间段从：</td>
+		                        <td style="text-align: left; width:260px;">
+		                        	<input id="search_start" name="search_start" class="easyui-datebox" style="width:100px;"/>到
+		                        	<input id="search_end" name="search_end" class="easyui-datebox" style="width:100px;"/>
+		                        </td>
+		                        <td style="text-align: right; width:80px;">资金方式：</td>
+		                        <td style="text-align: left; width:130px;">
+		                        	<select id="search_genus" name="search_genus" style="width:120px;">
+		                        		<option value="">所有...</option>
+		                        		<option value="0">保证金赔付</option>
+		                        		<option value="1">保证金充值</option>
+		                        	</select>
+		                        </td>
+		                        <td style="text-align: right; width:80px;">关键字：</td>
+		                        <td style="text-align: left; width:130px;">
+		                        	<input type="text" id="search_keyword" name="search_keyword" style="width:120px;">
+		                        </td>
+		                        
+		                        <td style="text-align: left; width:430px;">
+		                        	<a href="javascript:void(0)" onclick="searchLog();" class="easyui-linkbutton" icon="icon-search">查找</a>
+		                        	<a href="javascript:void(0)" onclick="refreshLog();" class="easyui-linkbutton" icon="icon-reload">刷新</a>
+		                        </td>
+		                        <td>&nbsp;</td>
+		                    </tr>
+		                </table>
+		           </form>
+		     	</div>
+		    </div>
+	    
+		    
 <!-- 整个公共页尾 -->
 <include file="Public:footer" />
 <!-- 整个公共页尾结束 -->

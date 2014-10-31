@@ -55,5 +55,34 @@ ALTER TABLE `zsh`.`zsh_deal` MODIFY COLUMN `return_money` DECIMAL(20,2) NOT NULL
  MODIFY COLUMN `balance_price` DECIMAL(20,2) NOT NULL;
 
 
+ DROP TABLE IF EXISTS `zsh`.`zsh_redpaper_get`;
+CREATE TABLE  `zsh`.`zsh_redpaper_get` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `user_id` int(10) unsigned NOT NULL,
+  `user_name` varchar(45) NOT NULL,
+  `redpaper_id` int(10) unsigned NOT NULL,
+  `redpaper_name` varchar(128) NOT NULL,
+  `redcode` varchar(45) NOT NULL,
+  `point` int(10) unsigned NOT NULL default '0',
+  `status` smallint(1) unsigned default '0',
+  `checked` smallint(1) unsigned default '0',
+  `create_time` int(10) unsigned NOT NULL,
+  `use_time` int(10) unsigned default NULL,
+  `location_id` int(10) unsigned NOT NULL,
+  `supplier_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
  
- 
+alter table zsh_compensate add column genus smallint(1) default 1 after deal_name;
+alter table zsh_compenprocess add column genus smallint(1) default 1 after compen_id;
+alter table zsh_compenprocess add column total_price DECIMAL(20,2) default 0 after genus;
+alter table zsh_compenprocess add column location_id int not null;
+update zsh_compenprocess set location_id=14;
+
+update `zsh_menu` set `sort`=5 where `id`=211;
+update `zsh_menu` set `sort`=6 where `id`=185;
+update `zsh_menu` set `sort`=4 where `id`=184;
+update `zsh_menu` set `sort`=3 where `id`=183;
+update `zsh_menu` set `sort`=2 where `id`=182;
+update `zsh_menu` set `sort`=1 where `id`=181;
+

@@ -114,6 +114,35 @@ class PromotionAction extends CommonAction
 	}
 	
 	
+	function redpaperGet_list()
+	{
+		$list = $this->redpaperGetData_list();
+		echo json_encode($list);
+	}
+	
+	function checkRedpaper()
+	{
+		$sql = "update ". DB_PREFIX."redpaper_get set status=1, checked=1 where id=".$_REQUEST['id'];
+		$GLOBALS['db']->query($sql);
+		$this->success("核对成功！",true);
+	}
+	
+	function detailUser(){
+		$sql = "select * from ". DB_PREFIX."user where id=".$_REQUEST['user_id'];
+		$user = $GLOBALS['db']->getRow($sql);
+		if(!$user){
+			$this->success("您查看的用户信息不存在！");
+		}
+		$user['img'] = $this->getPicture($user['face_id']);
+		$user['user_name'] = $user['open_truename']?$user['user_name']:"保密";
+		$user['mobile'] = $user['open_mobile']?$user['mobile']:"保密";
+		$user['area_name'] = $this->getArea($user['area_id']);
+		$user['verify_info'] =$user['verify']?"<font color='green'>已认证业主</font>":"<font color='gray'>未认证业主</font>";
+		
+		$this->assign('focus_area',explode(",", $user['focus_area']));
+		$this->assign('user',$user);
+		$this->display();
+	}
 	/**
 	 * @access  public
 	 * @param
@@ -170,6 +199,58 @@ class PromotionAction extends CommonAction
 		return $arr;
 	}
 	
+	/**
+	* @access  public
+	* @param
+	* @return void
+	*/
+	function redpaperGetData_list()
+	{
+		$filter = array();
+	
+		$filter['search_redpaper_name'] = empty($_REQUEST['search_redpaper_name']) ? ''     : trim($_REQUEST['search_redpaper_name']);
+		$filter['search_user_name'] = empty($_REQUEST['search_user_name']) ? ''     : trim($_REQUEST['search_user_name']);
+	
+		$filter['sort']    = empty($_REQUEST['sort'])    ? 'id' : trim($_REQUEST['sort']);
+		$filter['order'] = empty($_REQUEST['order']) ? 'DESC'     : trim($_REQUEST['order']);
+		$filter['page'] = empty($_REQUEST['page']) ? '1'     : trim($_REQUEST['page']);
+		$filter['page_size']	= empty($_REQUEST['rows']) ? '25'     : trim($_REQUEST['rows']);
+	
+	
+		$where = " WHERE location_id='".$this->location_id."' ";
+	
+		if($filter['search_redpaper_name']){
+			$where.=" AND redpaper_name LIKE '%".$filter['search_redpaper_name']."%' ";
+		}
+		if($filter['search_user_name']){
+			$where.=" AND user_name LIKE '%".$filter['search_user_name']."%' ";
+		}
+	
+		$sql = "SELECT COUNT(*) FROM " . DB_PREFIX."redpaper_get".$where;
+		$filter['record_count'] = $GLOBALS['db']->getOne($sql);
+	
+		/* 分页大小 */
+		$filter = $this->page_and_size($filter);
+	
+		$sql = "SELECT * ".
+	                " FROM " . DB_PREFIX."redpaper_get".$where.
+	                " ORDER by " . $filter['sort'] . ' ' . $filter['order'] .
+	                " LIMIT " . $filter['start'] . ',' . $filter['page_size'];
+	
+// 		echo $sql;
+		$list = $GLOBALS['db']->getAll($sql);
+	
+		// 带上附加字段
+		foreach ($list as $key => $value) {
+			$list[$key]['create_time'] = date('Y-m-d H:i:s', $value['create_time']);
+			$list[$key]['use_time'] = date('Y-m-d H:i:s', $value['use_time']);
+		}
+	
+		$arr = array('rows' => $list, 'filter' => $filter,
+		        'page' => $filter['page_count'], 'total' => $filter['record_count']);
+	
+		return $arr;
+	}
 
 }
 ?>

@@ -109,5 +109,21 @@ class AuthAction extends BaseAction{
 	{
 		$this->assign("main_title",L(MODULE_NAME."_INDEX"));
 	}
+	
+	public function getPicture($id)
+	{
+		$sql = "select * from ".DB_PREFIX."picture where id=".$id;
+		$pic = $GLOBALS['db']->getRow($sql);
+		if($pic['path']){
+			return $pic['path'];
+		}
+		return $pic['url'];
+	}
+	
+	public function getArea($id)
+	{
+		$sql = "select name from ".DB_PREFIX."area_new where id=".$id;
+		return $GLOBALS['db']->getOne($sql);
+	}
 }
 ?>

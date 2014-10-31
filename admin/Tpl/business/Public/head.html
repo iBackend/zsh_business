@@ -30,7 +30,7 @@ $(function(){
 <body style="background:url(__TMPL__Common/images/topbg.gif) repeat-x;overflow-x:hidden">
 
     <div class="topleft">
-    <a href="/"><img src="__TMPL__Common/images/logo.png" title="系统首页" /></a>
+    <a href="/"><img src="__TMPL__Common/images/bigMenus/logo.png" title="系统首页" /></a>
     </div>
 	
 	<!-- 主导航 -->
@@ -39,7 +39,7 @@ $(function(){
 			<volist name="estatemenu1" id="vo">
 				<li>
 				<a href="{$vo.url}" class="">
-					<img src="__TMPL__Common/images/icon0<?php echo ($key+1);?>.png"  /><h2>{$vo.title}</h2>
+					<img src="__TMPL__Common/images/bigMenus/<?php echo ($key+1);?>.png"  /><h2>{$vo.title}</h2>
 				</a>
 				</li>
 			</volist>

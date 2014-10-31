@@ -95,40 +95,58 @@ class GoodmanageAction extends CommonAction
 		$city = D('AreaNew');
 		$city_list = $city->order("`sort` DESC")->select();
 		$city_tree = list_to_tree($city_list,$pk='id',$pid='pid',$child='_child',$root=0);
-
 		$city_tree2 = tree_to_list2($city_tree);
-
-		if ($_POST) {
-			// 处理图片
-			$file_upload_flag = false;
-			foreach($_FILES as $f){
-				if($f['size']>0){
-					$file_upload_flag = true;
-					break;
-				}
+		// 输出分类
+		$cate_list = D('ShopCate')->where("`pid` = {$bid}")->select();
+		$this->assign('cate_list',$cate_list);
+		$this->assign('citys',$city_tree2);
+		
+		if($_REQUEST['id']){
+			$goods = D('deal')->where("`id` = {$_REQUEST['id']}")->select();
+			if(!$goods){
+				$this->error('您所选择的商品不存在！请在商品列表中选中商品进行查看！');
 			}
-			
-			if($file_upload_flag){
-				$arr_img = $this->uploadImage();
-				if($arr_img['status']==0)
-				{
-					$this->error($arr_img['info']);
-				}
-				foreach ($arr_img['data'] as $key => $value) {
-					$_POST[$value['key']] = 'http://'.$_SERVER['HTTP_HOST'].$value['recpath'].$value['savename'];
-				}
-				$_POST['icon'] = 'http://'.$_SERVER['HTTP_HOST'].$arr_img['data'][0]['recpath'].$arr_img['data'][0]['savename'];
+			$this->assign('goods',$goods[0]);
+		}
+		$this->display();
+	}
+	
+	
+	public function savegood(){
+		// 处理图片
+		$file_upload_flag = false;
+		foreach($_FILES as $f){
+			if($f['size']>0){
+				$file_upload_flag = true;
+				break;
 			}
+		}
 			
+		if($file_upload_flag){
+			$arr_img = $this->uploadImage();
+			if($arr_img['status']==0)
+			{
+				$this->error($arr_img['info']);
+			}
+			foreach ($arr_img['data'] as $key => $value) {
+				$_POST[$value['key']] = 'http://'.$_SERVER['HTTP_HOST'].$value['recpath'].$value['savename'];
+			}
+			$_POST['icon'] = 'http://'.$_SERVER['HTTP_HOST'].$arr_img['data'][0]['recpath'].$arr_img['data'][0]['savename'];
+		}
+		
+		$deal_model = D('Deal');
+		$deal_model->create();
+		if($_POST['id']){
+			//update
+			$result = $deal_model->save();
+			
+		}else {
+			//insert
 			// 商家商品关联
-			$supplier_id = D('supplier_account_location_link')->where("`account_id` = {$bid}")->getField('location_id');
-			$deal_model = D('Deal');
-			$deal_model->create();
-			$deal_model->supplier_id = $supplier_id;
+			$deal_model->supplier_id = $this->location_id;
 			$deal_model->is_effect = 1;
 			$deal_model->success_time = time();
 			$deal_model->create_time = time();
-
 			$result = $deal_model->add();
 			if ($result) {
 				// 写关联
@@ -138,20 +156,17 @@ class GoodmanageAction extends CommonAction
 				$datas['location_id'] = $location_id;
 				$datas['deal_id'] = $result;
 				M('deal_location_link')->add($datas);
-				$this->success('商品发布成功');
-			}else {
-				$this->error('商品发布失败');
 			}
-
+		}
+		
+		if ($result) {
+			$this->success('商品发布成功');
 		}else {
-			// 输出分类
-			$cate_list = D('ShopCate')->where("`pid` = {$bid}")->select();
-			$this->assign('cate_list',$cate_list);
-			$this->assign('citys',$city_tree2);
-			$this->display();
+			$this->error('商品发布失败');
 		}
 		
 	}
+	
 	
 	/**
 	 * 商品详情

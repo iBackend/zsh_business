@@ -88,6 +88,14 @@ function detailGood(){
     window.location = "/index.php?m=Goodmanage&a=detailGood&id="+row.id;
 }
 
+function editGood(){
+	var row = selectRow();
+	if(!row){
+		return;
+	}
+    window.location = "/index.php?m=Goodmanage&a=addgood&id="+row.id;
+}
+
 
 //数据删除
 function deleteGood() {
@@ -215,6 +223,7 @@ function refreshGood(){
 	    	<div id="toolbar" style="padding:5px;height:auto">
 		     	 <div style="margin-bottom:5px">
 		            <a href="javascript:void(0)" onclick="addGood();" class="easyui-linkbutton" iconCls="icon-add" >添加</a>
+		            <a href="javascript:void(0)" onclick="editGood();" class="easyui-linkbutton" iconCls="icon-edit" >修改</a>
 		            <a href="javascript:void(0)" onclick="detailGood();" class="easyui-linkbutton" iconCls="icon-application_view_detail" >详情</a>
 		            <a href="javascript:void(0)" id="delete_btn" class="easyui-linkbutton" iconCls="icon-remove" >删除</a>
 		            <a href="javascript:void(0)" id="upGood_btn" class="easyui-linkbutton" iconCls="icon-arrow_up" >上架</a>
