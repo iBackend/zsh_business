@@ -1,0 +1,38 @@
+<!-- 整个公共页头 -->
+<include file="Public:head" />
+<!-- 整个公共页头结束 -->
+<script src="__TMPL__Common/editor/kindeditor.js" type="text/javascript"></script>
+<script type="text/javascript">
+</script>
+
+	    <div class="mainindex">
+	    	<form action="index.php?m=Promotion&a=userSave" class="form-horizontal" enctype="multipart/form-data" role="form" method="post" >
+	    	<div class="formbody">
+    			<input type="hidden" value="{$user.id}" id="id" name="id"/>
+			    <div class="formtitle"><span>用户详情</span></div>
+			    
+			    <ul class="forminfo">
+			    <li><label>头像：</label><img style="max-width:150px;" src="{$user.img}"><i></i></li>
+				<li><label>昵称：</label>{$user.nick_name} <i></i></li>
+			    <li><label>认证信息：</label>{$user.verify_info} <i></i></li>
+				
+				<li><label>姓名：</label>{$user.user_name}<i></i></li>
+				<li><label>电话：</label>{$user.mobile}<i></i></li>
+				<li><label>所在小区：</label>{$user.area_name}<i></i></li>
+			    
+				<?php foreach ($focus_area as $key => $farea): ?>
+			    <li><label>关注的小区：</label>{$farea}</li>
+			    <?php endforeach; ?>
+			   
+			    <li>
+			    	<label>&nbsp;</label><input name="" type="button" class="btn" onclick="window.location='index.php?m=Promotion&a=fensilist';" value="返回"/>
+			    </li>
+			    </ul>
+			    
+			    </div>
+			</form>
+	    </div>
+
+<!-- 整个公共页尾 -->
+<include file="Public:footer" />
+<!-- 整个公共页尾结束 -->
