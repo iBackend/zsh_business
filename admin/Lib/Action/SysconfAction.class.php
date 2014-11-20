@@ -25,11 +25,28 @@ class SysconfAction extends CommonAction
 		$city_tree = list_to_tree($city_list,$pk='id',$pid='pid',$child='_child',$root=0);
 		$city_tree2 = tree_to_list2($city_tree);
 			
+		$prov = D('AreaNew')->where("`pid` = 0")->select();
+		$this->assign('prov',$prov);
+		
 		$this->assign('business_info',$business);
 		$this->assign('citys',$city_tree2);
 		$this->display();
 	}
 	
+	
+	public function getCity()
+	{
+		$prov_id = $_GET['prov_id']*1;
+		$list = D('AreaNew')->where("`pid` = {$prov_id}")->select();
+		echo json_encode($list,true);
+	}
+	
+	public function getArea()
+	{
+		$city_id = $_GET['city_id']*1;
+		$list = D('AreaNew')->where("`pid` = {$city_id}")->select();
+		echo json_encode($list,true);
+	}
 	
 	public function basesave()
 	{
@@ -58,11 +75,20 @@ class SysconfAction extends CommonAction
 		}
 		
 		$re = $biz->save();
-		if ($re) {
-			$this->success('商户信息保存成功');
-		}else {
-			$this->error('商户信息保存失败');
+		if($_POST['prov_id'] || $_POST['city_id'] || $_POST['country_id']){
+			$sql = "update ".DB_PREFIX."supplier_location set city_id=".$_POST['city_id']." ";
+			if($_POST['prov_id']){
+				$sql.= ",prov_id=".$_POST['prov_id']." ";
+			}
+			if($_POST['country_id']){
+				$sql.= ",country_id=".$_POST['country_id']." ";
+			}
+			$sql.= " where  `id`=".$this->location_id;
+// 			echo $sql;
+// 			die();
+			$GLOBALS['db']->query($sql);
 		}
+		$this->success('商户信息保存成功');
 	}
 
 	public function authinfo()

@@ -86,3 +86,7 @@ update `zsh_menu` set `sort`=3 where `id`=183;
 update `zsh_menu` set `sort`=2 where `id`=182;
 update `zsh_menu` set `sort`=1 where `id`=181;
 
+ALTER TABLE `zsh`.`zsh_deal_order` ADD COLUMN `courier_phone` VARCHAR(45) DEFAULT '' AFTER `promote_description`;
+ALTER TABLE `zsh`.`zsh_supplier_location` ADD COLUMN `free_freight` DECIMAL(20,2) DEFAULT 0 AFTER `tuan_youhui_cache`;
+alter table zsh_supplier_location add column prov_id int  default 0  after api_address;
+alter table zsh_supplier_location add column country_id int  default 0  after city_id;

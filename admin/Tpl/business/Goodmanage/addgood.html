@@ -4,7 +4,7 @@
 				
 	    
 	    <div class="mainindex">
-	    	<form class="form-horizontal" action="index.php?m=Goodmanage&a=savegood" enctype="multipart/form-data" role="form" method="post" >
+	    	<form class="form-horizontal" action="index.php?m=Goodmanage&a=savegood" enctype="multipart/form-data" role="form" method="post" onsubmit="return validateForm();">
 	    	<div class="formbody">
     				<input type="hidden" value="{$goods.id}" name="id"/>
 			    <div class="formtitle"><span>商品基本信息</span></div>
@@ -42,7 +42,7 @@
 
 			    <!-- <li><label>商品标示图</label><input name="icon" placeholder="" type="file" class="dfinput" /><i></i></li> -->
 
-			    <li><label>代金券金额</label><input name="balance_price" value="{$goods.balance_price}" type="text" class="dfinput" /><i>元</i></li>
+			    <li><label>代金券金额</label><input name="balance_price" id="balance_price"  value="{$goods.balance_price}" type="text" class="dfinput" /><i>元</i></li>
 			   
 			    <li>
 			    	<label>&nbsp;</label><input name="" type="submit" class="btn" value="提交配置信息"/>
@@ -56,6 +56,19 @@
 	    </div>
 </div>
 <script type="text/javascript">
+
+function validateForm(){
+	var reg = new RegExp("^[0-9]*$");  
+    var balance_price = document.getElementById("balance_price");
+	if(!reg.test(balance_price.value)){  
+	   alert("请输入数字!");
+	   balance_price.focus();
+	   return false;
+	}
+  
+  	return true;
+}
+
 	$(document).ready(function() {
 		function toDecimal(x) {   
             var f = parseFloat(x);              
